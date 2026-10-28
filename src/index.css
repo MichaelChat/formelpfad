@@ -1,0 +1,169 @@
+@import 'tailwindcss';
+@import 'katex/dist/katex.min.css';
+@import '@fontsource-variable/inter/index.css';
+@import '@fontsource-variable/fraunces/index.css';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Visuelle Identität „Formelpfad“: Papier & Tinte.
+ * Warmes Papierweiß, tiefe Tintenblau-Töne, je Teil eine eigene Farbe
+ * (Finanzierung = Petrol, Rechnungswesen = Violett, Jahresabschluss = Bernstein).
+ */
+@theme {
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Fraunces Variable', ui-serif, Georgia, serif;
+
+  --color-paper: #fbf8f2;
+  --color-paper-2: #f3eee4;
+  --color-ink: #1b2233;
+  --color-ink-2: #3b4459;
+  --color-ink-3: #6b7489;
+  --color-line: #e4ddcf;
+
+  --color-fin: #0e7c86;
+  --color-fin-soft: #d8eef0;
+  --color-rw: #6d4bc3;
+  --color-rw-soft: #e9e2f8;
+  --color-jb: #b9741a;
+  --color-jb-soft: #f7e8d0;
+
+  --color-good: #1f9d63;
+  --color-good-soft: #dcf3e7;
+  --color-bad: #d2513e;
+  --color-bad-soft: #fbe3de;
+  --color-xp: #e0a100;
+  --color-flame: #e8622c;
+  --color-focus: #2f6fed;
+
+  --radius-card: 1.25rem;
+  --shadow-card: 0 1px 0 rgb(27 34 51 / 0.04), 0 8px 24px -12px rgb(27 34 51 / 0.18);
+  --shadow-lift: 0 2px 0 rgb(27 34 51 / 0.08), 0 16px 32px -16px rgb(27 34 51 / 0.35);
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+  .dark {
+    color-scheme: dark;
+    --color-paper: #12161f;
+    --color-paper-2: #1a2030;
+    --color-ink: #eef0f5;
+    --color-ink-2: #c6cbd8;
+    --color-ink-3: #8d95a8;
+    --color-line: #2a3245;
+    --color-fin: #4fc3cc;
+    --color-fin-soft: #143a3f;
+    --color-rw: #a88cf0;
+    --color-rw-soft: #2b2448;
+    --color-jb: #f0b25c;
+    --color-jb-soft: #3d2d15;
+    --color-good: #3fcf8e;
+    --color-good-soft: #133528;
+    --color-bad: #f07a66;
+    --color-bad-soft: #3d1d18;
+    --shadow-card: 0 1px 0 rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.6);
+    --shadow-lift: 0 2px 0 rgb(0 0 0 / 0.35), 0 16px 32px -16px rgb(0 0 0 / 0.7);
+  }
+  html {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    min-height: 100dvh;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-variation-settings: 'opsz' 72, 'SOFT' 50;
+    letter-spacing: -0.01em;
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 2px;
+    border-radius: 0.5rem;
+  }
+  button {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+}
+
+/* Formeln: lange Ausdrücke scrollen horizontal statt abgeschnitten zu werden */
+.math-block {
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+  padding: 0.25rem 0.125rem;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+.math-block .katex-display {
+  margin: 0.25rem 0;
+}
+.katex {
+  font-size: 1.08em;
+}
+.dark .katex {
+  color: var(--color-ink);
+}
+
+@keyframes pop-in {
+  0% {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes slide-up {
+  0% {
+    transform: translateY(12px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+.anim-pop {
+  animation: pop-in 0.22s ease-out both;
+}
+.anim-up {
+  animation: slide-up 0.28s ease-out both;
+}
+.anim-shake {
+  animation: shake 0.3s ease-in-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .anim-pop,
+  .anim-up,
+  .anim-shake {
+    animation: none;
+  }
+}
+.reduce-motion .anim-pop,
+.reduce-motion .anim-up,
+.reduce-motion .anim-shake {
+  animation: none;
+}
