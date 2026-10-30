@@ -1,6 +1,8 @@
 import { HashRouter, Route, Routes, useLocation } from 'react-router'
 import { useEffect } from 'react'
 import { StoreProvider } from './state/store'
+import { CloudRoot } from './state/CloudRoot'
+import { cloudEnabled } from './lib/cloud/config'
 import { Layout } from './ui/Layout'
 import Home from './pages/Home'
 import Path from './pages/Path'
@@ -48,11 +50,11 @@ export function AppRoutes() {
 }
 
 export default function App() {
-  return (
-    <StoreProvider>
-      <HashRouter>
-        <AppRoutes />
-      </HashRouter>
-    </StoreProvider>
+  const routes = (
+    <HashRouter>
+      <AppRoutes />
+    </HashRouter>
   )
+  // Mit Firebase-Konfiguration: Anmeldung + Cloud-Speicher; sonst nur Browser-Speicher.
+  return cloudEnabled ? <CloudRoot>{routes}</CloudRoot> : <StoreProvider>{routes}</StoreProvider>
 }

@@ -93,6 +93,8 @@ export interface AppState {
   /** Zuletzt falsch beantwortete Aufgaben (neueste zuerst). */
   recentWrong: string[]
   log: AttemptRecord[]
+  /** Zeitpunkt der letzten Änderung (für das Zusammenführen zwischen Geräten). */
+  updatedAt?: string
 }
 
 export const MAX_LOG = 4000

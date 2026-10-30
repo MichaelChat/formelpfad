@@ -3,7 +3,7 @@
  * mit Versionsnummer. Bei künftigen Formatänderungen wird hier migriert.
  *
  * Keine personenbezogenen Daten außer dem optional eingegebenen Vornamen.
- * Es gibt KEINE geräteübergreifende Synchronisation – dafür Export/Import als Datei.
+ * Ohne Anmeldung ist das der einzige Speicher (plus Export/Import). Mit Anmeldung siehe lib/cloud/sync.ts.
  */
 import { initialState, STATE_VERSION, type AppState } from './progress'
 
@@ -15,7 +15,7 @@ export interface StorageLike {
   removeItem(key: string): void
 }
 
-function defaultStorage(): StorageLike | null {
+export function defaultStorage(): StorageLike | null {
   try {
     const s = globalThis.localStorage
     const probe = '__formelpfad_probe__'

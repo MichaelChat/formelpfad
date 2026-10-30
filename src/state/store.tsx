@@ -24,8 +24,21 @@ interface StoreValue {
 
 const StoreContext = createContext<StoreValue | null>(null)
 
-export function StoreProvider({ children, storage }: { children: ReactNode; storage?: StorageLike | null }) {
+export interface StoreProviderProps {
+  children: ReactNode
+  /** Nur Browser-Speicher (Standard: localStorage). */
+  storage?: StorageLike | null
+  /** Startzustand von außen (Cloud-Modus); dann wird nicht selbst gespeichert. */
+  initialState?: AppState
+  /** Wird nach jeder Änderung aufgerufen (Cloud-Modus: Synchronisation). */
+  onCommit?: (s: AppState) => void
+  /** Zustände, die von außen kommen (z. B. von einem anderen Gerät). */
+  subscribeExternal?: (fn: (s: AppState) => void) => () => void
+}
+
+export function StoreProvider({ children, storage, initialState: given, onCommit, subscribeExternal }: StoreProviderProps) {
   const [{ initial, persistent }] = useState(() => {
+    if (given) return { initial: given, persistent: true }
     const r = storage === undefined ? loadState() : loadState(storage)
     return { initial: r.state, persistent: r.persistent }
   })
@@ -42,15 +55,26 @@ export function StoreProvider({ children, storage }: { children: ReactNode; stor
 
   const commit = useCallback(
     (next: AppState) => {
-      const { state: withAch, unlocked } = evaluateAchievements(next)
+      const evaluated = evaluateAchievements(next)
+      const unlocked = evaluated.unlocked
+      const withAch = { ...evaluated.state, updatedAt: new Date().toISOString() }
       stateRef.current = withAch
       setState(withAch)
-      if (storage === undefined) saveState(withAch)
+      if (onCommit) onCommit(withAch)
+      else if (storage === undefined) saveState(withAch)
       else saveState(withAch, storage)
       unlocked.forEach((a: Achievement) => pushToast({ kind: 'achievement', text: `Erfolg: ${a.title}` }))
     },
-    [pushToast, storage],
+    [pushToast, storage, onCommit],
   )
+
+  useEffect(() => {
+    if (!subscribeExternal) return
+    return subscribeExternal((s) => {
+      stateRef.current = s
+      setState(s)
+    })
+  }, [subscribeExternal])
 
   const update = useCallback((fn: (s: AppState) => AppState) => commit(fn(stateRef.current)), [commit])
 

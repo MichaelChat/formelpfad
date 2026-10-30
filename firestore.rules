@@ -1,0 +1,27 @@
+rules_version = '2';
+
+// Sicherheitsregeln für den Formelpfad.
+// Jede Person darf genau ein Dokument lesen und schreiben: users/<eigene Nutzer-ID>.
+// Alles andere ist gesperrt. In der Firebase-Konsole unter Firestore → Regeln einfügen
+// (oder mit `npx firebase-tools deploy --only firestore:rules` hochladen).
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{uid} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+
+      allow create, update: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['data', 'rev', 'updatedAt', 'schema'])
+        && request.resource.data.data is string
+        && request.resource.data.data.size() < 1000000
+        && request.resource.data.rev is int
+        && request.resource.data.updatedAt == request.time
+        // Revision muss genau um 1 steigen (schützt vor versehentlichem Überschreiben)
+        && request.resource.data.rev == (resource == null ? 1 : resource.data.rev + 1);
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

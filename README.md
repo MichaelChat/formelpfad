@@ -2,7 +2,10 @@
 
 Lern-App für **Finanzierung, Rechnungswesen und Jahresabschluss & Bewertung** (WiWi 1, SoSe 2026). Kurze Lektionen, Aufgaben mit sofortigem Feedback, verteilte Wiederholung und eine Klausursimulation nach der Beispielklausur. Alle Formeln und Originalaufgaben verweisen auf Dokument und Folie.
 
-Die App läuft komplett im Browser. Es gibt keinen Server und kein Konto, der Fortschritt liegt im `localStorage`.
+Die Seite ist rein statisch und läuft auf GitHub Pages. Es gibt zwei Betriebsarten:
+
+- **Mit Anmeldung (empfohlen):** Die Lernenden melden sich mit Google an, ihr Fortschritt liegt in Firebase (Google) und ist auf allen Geräten derselbe. Einrichtung: [`docs/firebase-setup.md`](docs/firebase-setup.md).
+- **Ohne Anmeldung:** Fehlt die Firebase-Konfiguration, speichert die App nur im Browser (`localStorage`). So laufen auch die Tests.
 
 ## Voraussetzungen
 
@@ -54,7 +57,8 @@ Der Workflow `.github/workflows/deploy.yml` führt bei jedem Push auf `main` Lin
    git push -u origin main
    ```
 3. **Pages einschalten**: im Repository *Settings → Pages → Build and deployment → Source:* **„GitHub Actions“** wählen. Damit veröffentlicht GitHub das Ergebnis des Workflows statt einfach einen Branch.
-4. Unter **Actions** den Lauf abwarten (ca. 3–5 Minuten). Die Adresse steht danach in *Settings → Pages*, typischerweise `https://DEIN-NAME.github.io/formelpfad/`.
+4. **Anmeldung einrichten** (optional, aber empfohlen): Firebase anlegen und die vier Werte als Repository-Variablen hinterlegen, siehe [`docs/firebase-setup.md`](docs/firebase-setup.md). Ohne diesen Schritt läuft die Seite ohne Anmeldung.
+5. Unter **Actions** den Lauf abwarten (ca. 3–5 Minuten). Die Adresse steht danach in *Settings → Pages*, typischerweise `https://DEIN-NAME.github.io/formelpfad/`.
 
 Jeder weitere `git push` aktualisiert die Seite automatisch.
 
@@ -64,8 +68,15 @@ Die PDFs selbst gehören **nicht** ins Repository (`.gitignore` schließt `mater
 
 ## Speicher und Daten
 
-- Der Fortschritt liegt im **Browser, pro Gerät und pro Browser**. Es gibt keine Synchronisation.
-- Wenn man Browserdaten löscht oder im privaten Fenster arbeitet, ist der Fortschritt weg. Unter *Einstellungen → Exportieren* lässt er sich als JSON-Datei sichern und auf einem anderen Gerät importieren.
+**Mit Anmeldung:**
+- Ein Firestore-Dokument pro Person (`users/<id>`), lesbar nur für diese Person (`firestore.rules`).
+- Der Browser hält zusätzlich einen Zwischenspeicher. Die App startet dadurch sofort und funktioniert auch offline, Änderungen werden nachgereicht.
+- Lernt jemand gleichzeitig auf zwei Geräten, werden die Stände zusammengeführt, ohne XP doppelt zu zählen (`src/lib/cloud/merge.ts`).
+- Ein Fortschritt aus der Zeit ohne Anmeldung wird bei der ersten Anmeldung übernommen.
+- Abmelden löscht den Zwischenspeicher im Browser. *Einstellungen → Konto löschen* entfernt Lernstand und Konto bei Firebase.
+
+**Ohne Anmeldung:**
+- Der Fortschritt liegt im **Browser, pro Gerät und pro Browser**. Werden die Browserdaten gelöscht, ist er weg. Unter *Einstellungen → Exportieren* lässt er sich als JSON-Datei sichern.
 - Ein beschädigter Speicherstand wird gesichert (Schlüssel `…:defekt:<Zeit>`), nicht gelöscht.
 
 ## Wo die Lernmaterialien liegen
@@ -99,11 +110,14 @@ Die Oberfläche liest alles generisch aus diesem Modell. Neue Kapitel, Lektionen
 | `docs/exam-analysis.md` | Aufbau der Beispielklausur, Umsetzung in der Arena |
 | `docs/content-issues.md` | Fehler in den Unterlagen, Annahmen, offene Fragen |
 | `docs/learning-model.md` | Beherrschung, Wiederholung, XP-Regeln, Speicherung |
+| `docs/firebase-setup.md` | Google-Anmeldung und Speicherung einrichten |
 
 ## Einschränkungen
 
 - **Nicht alle PDFs sind eingearbeitet.** Es fehlen u. a. JB Kapitel 1, 2, 3 und 6, die Diskussionsfragen, Rechnungswesen-Tutorien 1–3 und 6 sowie die Curraxit-Fallstudie (Liste in `docs/course-inventory.md`).
 - **Nur eine Klausur** liegt vor. „Relevanz“ heißt deshalb Häufigkeit in dieser Klausur, keine Prognose. Die Bearbeitungszeit ist ein Vorschlag der App.
 - **Offene Fragen** (Erklären, Begründen, Buchen im Worksheet als Freitext) lassen sich nicht automatisch bewerten. Hier bewertet man sich selbst anhand der Musterlösung.
-- **Kein Konto, keine Synchronisation** zwischen Geräten (nur per Export/Import).
+- **Die Anmeldung schützt den Fortschritt, nicht die Inhalte.** Formeln und Aufgaben stehen im JavaScript der Seite. Wer die Adresse kennt, kann sie auch ohne Anmeldung abrufen.
+- Die Google-Anmeldung wurde hier mit einer simulierten Cloud getestet, nicht gegen ein echtes Firebase-Projekt. Den ersten echten Test macht man nach `docs/firebase-setup.md`, Schritt 6.
+- Mehrere Geräte gleichzeitig: Kompetenzwerte und Wiederholungsplan einer Formel kommen vom Gerät mit der jüngeren Antwort, Zähler (XP, Versuche) werden addiert.
 - Das JavaScript-Bundle ist etwa 290 kB groß (gzip), vor allem durch KaTeX und die Inhalte. Auf langsamen Mobilverbindungen dauert der erste Aufruf etwas länger, danach greift der Browser-Cache.

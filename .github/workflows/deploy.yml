@@ -28,11 +28,19 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
-      - run: npm run build
+      # E2E-Tests laufen mit einem Build OHNE Firebase (kein Login nötig).
       - name: End-to-End-Tests (Playwright)
         run: |
           npx playwright install --with-deps chromium
           npm run test:e2e
+      # Veröffentlichter Build MIT Firebase. Werte: Settings → Secrets and variables → Actions → Variables.
+      - name: Build für GitHub Pages
+        run: npm run build
+        env:
+          VITE_FIREBASE_API_KEY: ${{ vars.FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_APP_ID: ${{ vars.FIREBASE_APP_ID }}
       - uses: actions/upload-pages-artifact@v3
         if: github.event_name != 'pull_request'
         with:

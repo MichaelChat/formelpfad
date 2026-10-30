@@ -4,6 +4,8 @@ import { HashRouter } from 'react-router'
 import { StoreProvider } from '../state/store'
 import { AppRoutes } from '../App'
 import type { StorageLike } from '../lib/persistence'
+import { CloudContext, type CloudValue } from '../state/cloud'
+import { initialState } from '../lib/progress'
 
 function memoryStorage(): StorageLike & { map: Map<string, string> } {
   const map = new Map<string, string>()
@@ -88,5 +90,38 @@ describe('App – Lernzyklus', () => {
     mount(memoryStorage(), '#/arena')
     expect(screen.getByText(/90 Punkte/)).toBeTruthy()
     expect(screen.getByRole('button', { name: /Mit Zeitlimit simulieren/ })).toBeTruthy()
+  })
+
+  it('Konto-Bereich (angemeldet): Status, Abgleich und Abmelden; Änderungen gehen an die Synchronisation', async () => {
+    const calls: string[] = []
+    const commits: unknown[] = []
+    const cloud: CloudValue = {
+      account: { uid: 'u1', email: 'michael@example.com', name: 'Michael' },
+      status: 'synced',
+      hasUnsyncedChanges: () => false,
+      syncNow: async () => void calls.push('sync'),
+      signOut: async () => void calls.push('signOut'),
+      deleteAccount: async () => void calls.push('delete'),
+    }
+    window.location.hash = '#/einstellungen'
+    render(
+      <CloudContext.Provider value={cloud}>
+        <StoreProvider initialState={initialState()} onCommit={(st) => commits.push(st)}>
+          <HashRouter>
+            <AppRoutes />
+          </HashRouter>
+        </StoreProvider>
+      </CloudContext.Provider>,
+    )
+    expect(screen.getByText('michael@example.com')).toBeTruthy()
+    expect(screen.getAllByText('Gespeichert').length).toBeGreaterThan(0)
+    fireEvent.click(screen.getByRole('button', { name: /Jetzt abgleichen/ }))
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /Abmelden/ }))
+    })
+    expect(calls).toEqual(['sync', 'signOut'])
+    fireEvent.change(screen.getByPlaceholderText('z. B. Alex'), { target: { value: 'Mia' } })
+    expect(commits).toHaveLength(1)
+    expect((commits[0] as { settings: { name: string } }).settings.name).toBe('Mia')
   })
 })

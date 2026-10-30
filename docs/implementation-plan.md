@@ -8,7 +8,7 @@
 
 - **Vite + React + TypeScript (strict)**, Tailwind CSS v4, KaTeX für die Formeln, Schriften selbst gehostet (offline-fähig, keine externen Requests).
 - **HashRouter** und `base: './'`: Die App funktioniert auf GitHub Pages in jedem Unterpfad, ohne Server-Konfiguration.
-- **Kein Backend.** Der Fortschritt liegt im `localStorage` des Browsers, mit Export und Import.
+- **Kein eigener Server.** Optional Google-Anmeldung und Speicherung über Firebase (Authentication + Firestore Lite, erst bei Bedarf geladen). Ohne Konfiguration liegt der Fortschritt im `localStorage`. Export und Import gibt es in beiden Fällen.
 
 ## Aufbau
 
@@ -18,7 +18,8 @@ src/content/   Inhalte (Kapitel, Formeln, Aufgaben, Klausur) – getrennt von de
   sources.ts   Quelldokumente
   data/*.ts    Inhalte je Fach
 src/lib/       Logik ohne UI: Parser, Äquivalenz, Validierung, Generator, SRS, XP, Engine
-src/state/     Store (React Context) + Persistenz
+src/lib/cloud/ Firebase-Anbindung, Synchronisation, Zusammenführen
+src/state/     Store (React Context), Anmeldung (CloudRoot)
 src/ui/        Bausteine: Formel- und Aufgabenkarten, Eingaben, Session-Player
 src/pages/     Start, Lernpfad, Formelsammlung, Wiederholen, Klausur-Arena, Fortschritt, Einstellungen
 e2e/           Playwright-Tests (mobil + Desktop)

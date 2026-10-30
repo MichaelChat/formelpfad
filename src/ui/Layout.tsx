@@ -1,6 +1,7 @@
 import { NavLink, Outlet, useLocation } from 'react-router'
 import { BarChart3, BookOpenText, Home, Map, RefreshCcw, Settings, Swords } from 'lucide-react'
 import { useStore } from '../state/store'
+import { STATUS_LABELS, useCloud } from '../state/cloud'
 import { dueFormulas } from '../lib/engine'
 import { useMemo } from 'react'
 
@@ -31,6 +32,8 @@ export function Logo({ className = '' }: { className?: string }) {
 
 export function Layout() {
   const { state, toasts, persistent } = useStore()
+  const cloud = useCloud()
+  const syncProblem = cloud && (cloud.status === 'offline' || cloud.status === 'error')
   const due = useMemo(() => dueFormulas(state).length, [state])
   const location = useLocation()
   const inSession = /^\/(lektion|boss|ueben|session|arena\/klausur|arena\/training|wiederholen\/start)/.test(location.pathname)
@@ -55,7 +58,7 @@ export function Layout() {
           ))}
         </nav>
         <p className="mt-auto px-2 text-xs leading-relaxed text-ink-3">
-          {persistent ? 'Fortschritt wird lokal in diesem Browser gespeichert.' : 'Speichern im Browser ist nicht möglich (z. B. privates Fenster). Fortschritt geht beim Schließen verloren.'}
+          {cloud ? `Angemeldet${cloud.account.email ? ` als ${cloud.account.email}` : ''} · ${STATUS_LABELS[cloud.status]}` : persistent ? 'Fortschritt wird lokal in diesem Browser gespeichert.' : 'Speichern im Browser ist nicht möglich (z. B. privates Fenster). Fortschritt geht beim Schließen verloren.'}
         </p>
       </aside>
 
@@ -82,6 +85,12 @@ export function Layout() {
             </NavLink>
           ))}
         </nav>
+      )}
+
+      {syncProblem && (
+        <div role="status" className="fixed left-1/2 top-2 z-40 -translate-x-1/2 rounded-full bg-paper-2 px-3 py-1 text-xs font-semibold text-ink-2 shadow-[var(--shadow-card)] md:hidden">
+          {cloud.status === 'offline' ? 'Offline – wird später gespeichert' : 'Speichern fehlgeschlagen'}
+        </div>
       )}
 
       <div className="pointer-events-none fixed inset-x-0 top-3 z-50 flex flex-col items-center gap-2 px-4" aria-live="polite">

@@ -1,8 +1,9 @@
 import { useRef, useState } from 'react'
-import { Download, Upload, Trash2 } from 'lucide-react'
+import { Cloud, CloudOff, Download, LogOut, RefreshCw, Upload, Trash2, UserX } from 'lucide-react'
 import { GOAL_LABELS, XP_RULES, type GoalKind } from '../lib/gamification'
 import { exportState, importState } from '../lib/persistence'
 import { useStore } from '../state/store'
+import { STATUS_LABELS, useCloud } from '../state/cloud'
 import { Button, Card, PageHeader } from '../ui/kit'
 import { Logo } from '../ui/Layout'
 
@@ -10,6 +11,8 @@ const GOAL_PRESETS: Record<GoalKind, number[]> = { xp: [30, 50, 100, 150], exerc
 
 export default function Settings() {
   const { state, update, replace, reset, persistent, pushToast } = useStore()
+  const cloud = useCloud()
+  const [accountBusy, setAccountBusy] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
   const [importError, setImportError] = useState<string | null>(null)
   const s = state.settings
@@ -41,6 +44,57 @@ export default function Settings() {
   return (
     <div className="mx-auto max-w-2xl space-y-5">
       <PageHeader title="Einstellungen" />
+
+      {cloud && (
+        <Card className="space-y-4 p-5">
+          <h2 className="text-xl font-semibold">Konto</h2>
+          <div>
+            <p className="font-semibold">{cloud.account.name ?? 'Angemeldet'}</p>
+            {cloud.account.email && <p className="text-sm text-ink-2">{cloud.account.email}</p>}
+          </div>
+          <p className="flex items-center gap-2 text-sm" role="status">
+            {cloud.status === 'offline' || cloud.status === 'error' ? <CloudOff className="size-4 text-bad" aria-hidden /> : <Cloud className="size-4 text-good" aria-hidden />}
+            {STATUS_LABELS[cloud.status]}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="secondary" disabled={accountBusy} onClick={() => void cloud.syncNow()}>
+              <RefreshCw className="size-5" aria-hidden /> Jetzt abgleichen
+            </Button>
+            <Button
+              variant="secondary"
+              disabled={accountBusy}
+              onClick={async () => {
+                setAccountBusy(true)
+                try {
+                  await cloud.signOut()
+                } finally {
+                  setAccountBusy(false)
+                }
+              }}
+            >
+              <LogOut className="size-5" aria-hidden /> Abmelden
+            </Button>
+            <Button
+              variant="bad"
+              disabled={accountBusy}
+              onClick={async () => {
+                if (!confirm('Konto und gesamten Lernstand endgültig löschen? Das kann nicht rückgängig gemacht werden. Tipp: Vorher unten „Exportieren“, wenn du den Stand behalten möchtest.')) return
+                setAccountBusy(true)
+                try {
+                  await cloud.deleteAccount()
+                } catch {
+                  pushToast({ kind: 'info', text: 'Löschen fehlgeschlagen – bitte erneut versuchen' })
+                } finally {
+                  setAccountBusy(false)
+                }
+              }}
+            >
+              <UserX className="size-5" aria-hidden /> Konto löschen
+            </Button>
+          </div>
+          <p className="text-xs text-ink-3">Beim Abmelden wird der Zwischenspeicher in diesem Browser gelöscht. Dein Fortschritt bleibt in deinem Konto.</p>
+        </Card>
+      )}
 
       <Card className="space-y-4 p-5">
         <h2 className="text-xl font-semibold">Profil</h2>
@@ -85,7 +139,7 @@ export default function Settings() {
 
       <Card className="space-y-3 p-5">
         <h2 className="text-xl font-semibold">Lernstand</h2>
-        <p className="text-sm text-ink-2">{persistent ? 'Dein Fortschritt wird nur lokal in diesem Browser gespeichert. Es gibt keine automatische Synchronisation zwischen Geräten – mit Export und Import kannst du den Stand manuell übertragen.' : 'In diesem Browser kann nichts gespeichert werden (z. B. privates Fenster). Exportiere deinen Stand vor dem Schließen.'}</p>
+        <p className="text-sm text-ink-2">{cloud ? 'Dein Fortschritt wird in deinem Konto gespeichert und auf allen Geräten abgeglichen, auf denen du angemeldet bist. Zusätzlich kannst du ihn als Datei sichern.' : persistent ? 'Dein Fortschritt wird nur lokal in diesem Browser gespeichert. Es gibt keine automatische Synchronisation zwischen Geräten – mit Export und Import kannst du den Stand manuell übertragen.' : 'In diesem Browser kann nichts gespeichert werden (z. B. privates Fenster). Exportiere deinen Stand vor dem Schließen.'}</p>
         <div className="flex flex-wrap gap-2">
           <Button variant="secondary" onClick={doExport}>
             <Download className="size-5" aria-hidden /> Exportieren
@@ -97,7 +151,7 @@ export default function Settings() {
           <Button
             variant="bad"
             onClick={() => {
-              if (confirm('Wirklich den gesamten Lernstand löschen? Das kann nicht rückgängig gemacht werden.')) {
+              if (confirm(cloud ? 'Wirklich den gesamten Lernstand löschen – auf allen Geräten? Das kann nicht rückgängig gemacht werden.' : 'Wirklich den gesamten Lernstand löschen? Das kann nicht rückgängig gemacht werden.')) {
                 reset()
                 pushToast({ kind: 'info', text: 'Lernstand zurückgesetzt' })
               }

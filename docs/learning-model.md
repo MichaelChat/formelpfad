@@ -28,8 +28,10 @@ Level: Level n beginnt bei 25·(n−1)·(n+2) XP.
 
 **Streak:** Ein Tag zählt, wenn an ihm mindestens eine Aufgabe richtig gelöst wurde. Gerechnet wird mit dem lokalen Datum, robust gegenüber der Sommerzeitumstellung.
 
-## Speicherung (persistence.ts)
+## Speicherung (persistence.ts, cloud/)
 
 - `localStorage`-Schlüssel `formelpfad:state:v1`, versioniertes JSON.
 - Ist der Speicher beschädigt, wird er als `formelpfad:state:v1:defekt:<Zeitstempel>` gesichert und die App startet sauber neu. Es geht nichts verloren.
 - Einstellungen → Export/Import als JSON-Datei. So lässt sich der Fortschritt auf ein anderes Gerät oder in einen anderen Browser mitnehmen.
+- **Mit Anmeldung** (`src/lib/cloud/`): Der Lernstand liegt als JSON-Text im Firestore-Dokument `users/<uid>` und hat einen Revisionszähler. Geschrieben wird 1,5 s nach der letzten Änderung, beim Verlassen der Seite sofort. Die Cloud nimmt nur an, wenn ihre Revision noch der zuletzt gesehenen entspricht. Sonst hat ein anderes Gerät dazwischen gespeichert: Beide Stände werden per Drei-Wege-Merge zusammengeführt (Zähler: Cloud + eigene Änderungen seit dem letzten gemeinsamen Stand; Kompetenz und Wiederholungsplan: jüngere Antwort), dann wird erneut geschrieben.
+- Damit ein Dokument unter der Firestore-Grenze von 1 MiB bleibt, behält die Cloud-Kopie nur die Statistiken der 300 neuesten zufallsgenerierten Varianten und kürzt bei Bedarf das älteste Antwortprotokoll. XP, Kompetenzen, Wiederholungsplan und Originalaufgaben bleiben vollständig.
