@@ -7,7 +7,7 @@ async function noHorizontalScroll(page: Page) {
 
 /** Beantwortet die aktuelle Aufgabe „irgendwie“ und geht weiter (für Durchlauf-Tests). */
 async function answerCurrent(page: Page) {
-  const radios = page.getByRole('radio')
+  const radios = page.getByRole('radio', { disabled: false })
   const checks = page.getByRole('checkbox')
   if (await page.getByLabel('Deine Antwort').count()) await page.getByLabel('Deine Antwort').first().fill('1')
   else if (await page.locator('input[aria-label^="Formel für"]').count()) await page.locator('input[aria-label^="Formel für"]').fill('1')
@@ -83,4 +83,31 @@ test('vollständige Klausursimulation mit Auswertung', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Nach Themengebiet' })).toBeVisible()
   await expect(page.getByText(/\/ 90/).first()).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Lösungswege' })).toBeVisible()
+})
+
+test('Wissensbereich: Suche, Detailansicht und Wissenstraining', async ({ page }) => {
+  await page.goto('/#/wissen')
+  await expect(page.getByRole('heading', { name: 'Wissen', exact: true })).toBeVisible()
+  await noHorizontalScroll(page)
+  await page.getByPlaceholder(/Suche nach Begriff/).fill('Lagebericht')
+  await page.getByText('Lagebericht und Bilanzeid').first().click()
+  await expect(page.getByRole('heading', { name: 'Lagebericht und Bilanzeid' })).toBeVisible()
+  await expect(page.getByText('Kernaussage')).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Das Wichtigste' })).toBeVisible()
+  await noHorizontalScroll(page)
+
+  await page.goto('/#/training?art=wissen')
+  await expect(page.getByRole('button', { name: 'Sitzung beenden' })).toBeVisible()
+  // erste Aufgabe beantworten → Feedback erscheint
+  for (let i = 0; i < 5; i++) {
+    const pruefen = page.getByRole('button', { name: /^(Prüfen|Schritt prüfen)$/ })
+    if (await pruefen.count()) {
+      await answerCurrent(page)
+      await pruefen.click()
+      break
+    }
+    if (await page.getByRole('button', { name: 'Musterlösung zeigen' }).count()) break
+    await page.waitForTimeout(100)
+  }
+  await expect(page.getByText(/Richtig!|Nicht ganz|Lösungsweg|Teilweise|Musterlösung/).first()).toBeVisible()
 })

@@ -1,7 +1,8 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router'
 import { Award, BookOpen, Brain, Crown, Flame, Lock, Scroll, Sparkles, Target, Trophy, Wrench } from 'lucide-react'
-import { chapters, formulas } from '../content'
+import { cardPath, chapters, formulas } from '../content'
+import { isKnowledge } from '../content/types'
 import { SKILL_LABELS, SKILLS, type Skill } from '../content/types'
 import { ACHIEVEMENTS, type Achievement } from '../lib/achievements'
 import { addDays, formatDayLong, localDay } from '../lib/dates'
@@ -37,8 +38,13 @@ export default function ProgressPage() {
   }, [state])
 
   const levels = useMemo(() => {
-    const c = { neu: 0, lernend: 0, gefestigt: 0, beherrscht: 0 }
-    for (const f of formulas) c[formulaMastery(state, f.id).level]++
+    const mk = () => ({ neu: 0, lernend: 0, gefestigt: 0, beherrscht: 0, total: 0 })
+    const c = { formel: mk(), wissen: mk() }
+    for (const f of formulas) {
+      const k = isKnowledge(f) ? c.wissen : c.formel
+      k[formulaMastery(state, f.id).level]++
+      k.total++
+    }
     return c
   }, [state])
 
@@ -76,20 +82,27 @@ export default function ProgressPage() {
           <p className="mt-1 text-xs text-ink-3">Längste Serie: {streak.longest} Tage · Ein Tag zählt ab einer richtig gelösten Aufgabe.</p>
         </Card>
         <Card className="p-5">
-          <p className="text-sm text-ink-3">Formeln</p>
-          <p className="font-display text-4xl font-semibold">
-            {levels.beherrscht}
-            <span className="text-xl text-ink-3"> / {formulas.length}</span>
-          </p>
-          <p className="mt-1 text-xs text-ink-3">
-            beherrscht · {levels.gefestigt} gefestigt · {levels.lernend} am Lernen
-          </p>
+          <p className="text-sm text-ink-3">Beherrscht</p>
+          <div className="mt-1 grid grid-cols-2 gap-3">
+            {(['formel', 'wissen'] as const).map((k) => (
+              <div key={k}>
+                <p className="font-display text-3xl font-semibold">
+                  {levels[k].beherrscht}
+                  <span className="text-base text-ink-3"> / {levels[k].total}</span>
+                </p>
+                <p className="text-xs font-semibold text-ink-2">{k === 'formel' ? 'Formeln' : 'Begriffe'}</p>
+                <p className="text-xs text-ink-3">
+                  {levels[k].gefestigt} gefestigt · {levels[k].lernend} am Lernen
+                </p>
+              </div>
+            ))}
+          </div>
         </Card>
       </div>
 
       <Card className="p-5">
         <h2 className="mb-3 text-xl font-semibold">Kompetenzprofil</h2>
-        <p className="mb-4 text-sm text-ink-3">Durchschnitt über alle geübten Formeln, getrennt nach Fähigkeit. „Beherrscht“ verlangt mehrere starke Dimensionen, nicht nur Wiedererkennen.</p>
+        <p className="mb-4 text-sm text-ink-3">Durchschnitt über alle geübten Formeln und Begriffe, getrennt nach Fähigkeit. „Beherrscht“ verlangt mehrere starke Dimensionen, nicht nur Wiedererkennen.</p>
         <div className="grid gap-3">
           {SKILLS.map((s) => {
             const v = skillAvg[s]
@@ -150,7 +163,7 @@ export default function ProgressPage() {
             <ul className="space-y-2">
               {weak.map((f) => (
                 <li key={f.id} className="flex items-center justify-between gap-2">
-                  <Link to={`/formeln/${encodeURIComponent(f.id)}`} className="min-w-0 truncate hover:underline">
+                  <Link to={cardPath(f)} className="min-w-0 truncate hover:underline">
                     {f.name}
                   </Link>
                   <MasteryBadge level={formulaMastery(state, f.id).level} />

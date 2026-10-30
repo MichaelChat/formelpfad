@@ -1,9 +1,9 @@
 import { useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { CalendarClock, RefreshCcw, TriangleAlert, XCircle } from 'lucide-react'
-import { exerciseById, formulaById } from '../content'
+import { cardPath, exerciseById, formulaById } from '../content'
 import { formatDayLong, localDay } from '../lib/dates'
-import { buildRetrySession, dueFormulas, formulaMastery, upcomingReviews, weakFormulas } from '../lib/engine'
+import { buildRetrySession, countLabel, dueFormulas, formulaMastery, upcomingReviews, weakFormulas } from '../lib/engine'
 import { useStore } from '../state/store'
 import { SessionPlayer } from '../ui/session/SessionPlayer'
 import { ButtonLink, Card, Empty, MasteryBadge, PageHeader } from '../ui/kit'
@@ -24,14 +24,14 @@ export default function Review() {
 
   return (
     <div className="space-y-5">
-      <PageHeader title="Wiederholen" subtitle="Zeitlich verteilte Wiederholung: Formeln kommen genau dann wieder, wenn du sie zu vergessen drohst." />
+      <PageHeader title="Wiederholen" subtitle="Zeitlich verteilte Wiederholung: Formeln und Begriffe kommen genau dann wieder, wenn du sie zu vergessen drohst." />
 
       <div className="grid gap-4 md:grid-cols-2">
         <Card className="p-5">
           <p className="flex items-center gap-2 text-lg font-semibold">
             <RefreshCcw className="size-5 text-fin" aria-hidden /> Heute fällig
           </p>
-          <p className="mb-4 text-ink-2">{due.length ? `${due.length} Formel${due.length === 1 ? '' : 'n'} – eine kurze Runde mit bis zu 8 Aufgaben.` : started ? 'Alles erledigt für heute.' : 'Nach deiner ersten Lektion plant die App hier Wiederholungen.'}</p>
+          <p className="mb-4 text-ink-2">{due.length ? `${countLabel(due)} – eine kurze Runde mit bis zu 8 Aufgaben.` : started ? 'Alles erledigt für heute.' : 'Nach deiner ersten Lektion plant die App hier Wiederholungen.'}</p>
           <ButtonLink to="/wiederholen/start?typ=faellig" className={due.length ? '' : 'pointer-events-none opacity-40'} size="lg">
             Wiederholung starten
           </ButtonLink>
@@ -40,7 +40,7 @@ export default function Review() {
           <p className="flex items-center gap-2 text-lg font-semibold">
             <TriangleAlert className="size-5 text-bad" aria-hidden /> Meine Schwächen trainieren
           </p>
-          <p className="mb-4 text-ink-2">{weak.length || state.recentWrong.length ? 'Frühere Fehler und Formeln mit niedrigem Kompetenzwert, gemischt.' : 'Noch keine Schwächen erkannt.'}</p>
+          <p className="mb-4 text-ink-2">{weak.length || state.recentWrong.length ? 'Frühere Fehler sowie Formeln und Begriffe mit niedrigem Kompetenzwert, gemischt.' : 'Noch keine Schwächen erkannt.'}</p>
           <ButtonLink to="/wiederholen/start?typ=schwaechen" variant="secondary" size="lg" className={weak.length || state.recentWrong.length ? '' : 'pointer-events-none opacity-40'}>
             Schwächen trainieren
           </ButtonLink>
@@ -49,11 +49,11 @@ export default function Review() {
 
       {due.length > 0 && (
         <Card className="p-5">
-          <h2 className="mb-3 text-xl font-semibold">Fällige Formeln</h2>
+          <h2 className="mb-3 text-xl font-semibold">Heute fällig</h2>
           <ul className="divide-y divide-line">
             {due.map((f) => (
               <li key={f.id} className="flex items-center justify-between gap-3 py-2">
-                <Link to={`/formeln/${encodeURIComponent(f.id)}`} className="min-w-0 truncate hover:underline">
+                <Link to={cardPath(f)} className="min-w-0 truncate hover:underline">
                   {f.name}
                 </Link>
                 <MasteryBadge level={formulaMastery(state, f.id).level} />

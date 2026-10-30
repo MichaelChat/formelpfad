@@ -452,6 +452,7 @@ export const formulas: Formula[] = [
   // ------------------------------------------------------------------ F3
   {
     id: 'fin.anleihearten',
+    kind: 'wissen',
     name: 'Anleihearten, Rating und Gestaltung',
     short: 'Anleihearten',
     chapterId: 'fin-anleihen',

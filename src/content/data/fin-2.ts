@@ -185,6 +185,7 @@ export const formulas: Formula[] = [
   },
   {
     id: 'fin.izs-probleme',
+    kind: 'wissen',
     name: 'Probleme der internen Zinssatzmethode',
     short: 'IZS-Probleme',
     chapterId: 'fin-invest',
@@ -209,6 +210,7 @@ export const formulas: Formula[] = [
   // ------------------------------------------------------------------ F5
   {
     id: 'fin.ek-fk',
+    kind: 'wissen',
     name: 'Eigen- vs. Fremdkapital und Aktienrechte',
     short: 'EK vs. FK',
     chapterId: 'fin-aktien',
@@ -226,6 +228,7 @@ export const formulas: Formula[] = [
   },
   {
     id: 'fin.ipo',
+    kind: 'wissen',
     name: 'Empirische IPO-Phänomene',
     aliases: ['Börsengang'],
     short: 'IPO-Phänomene',
@@ -667,6 +670,7 @@ export const formulas: Formula[] = [
   },
   {
     id: 'fin.capm-annahmen',
+    kind: 'wissen',
     name: 'CAPM-Annahmen und Risikozerlegung',
     short: 'CAPM-Annahmen',
     chapterId: 'fin-portfolio',

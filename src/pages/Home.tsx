@@ -1,11 +1,11 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router'
-import { ArrowRight, BookOpenText, Flame, RefreshCcw, Settings, Sparkles, Swords, Target, TriangleAlert, Zap } from 'lucide-react'
-import { chapterById, formulaById } from '../content'
+import { ArrowRight, BookOpenText, Flame, Lightbulb, RefreshCcw, Settings, Shuffle, Sparkles, Swords, Target, TriangleAlert, Zap } from 'lucide-react'
+import { cardPath, cardsOfKind, chapterById } from '../content'
 import { PARTS } from '../content/types'
 import { dailyQuests } from '../lib/achievements'
 import { localDay } from '../lib/dates'
-import { chapterProgress, currentChapter, dueFormulas, formulaMastery, nextLesson, weakFormulas } from '../lib/engine'
+import { chapterProgress, countLabel, currentChapter, dueFormulas, formulaMastery, nextLesson, weakFormulas } from '../lib/engine'
 import { computeStreak, goalProgress, GOAL_LABELS, levelFromXp } from '../lib/gamification'
 import { activeDays } from '../lib/progress'
 import { useStore } from '../state/store'
@@ -40,7 +40,7 @@ export default function Home() {
       {/* Kopfbereich */}
       <header className="flex items-center justify-between gap-3">
         <div className="min-w-0 md:hidden">
-          <Logo className="[&>svg]:size-7 text-lg" />
+          <Logo className="[&>svg]:size-7 text-lg max-[379px]:text-[0px]" />
         </div>
         <h1 className="hidden text-3xl font-semibold md:block">{greeting(state.settings.name)}</h1>
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
@@ -77,7 +77,7 @@ export default function Home() {
             <>
               <h2 className="mt-3 text-3xl font-semibold">Willkommen beim Formelpfad</h2>
               <p className="mt-2 max-w-xl text-ink-2">
-                Kurze Lektionen zu allen Formeln aus Finanzierung, Rechnungswesen sowie Jahresabschluss & Bewertung – mit Originalaufgaben aus Tutorien und Beispielklausur. Starte mit der ersten Lektion, sie dauert etwa fünf Minuten.
+                Kurze Lektionen zu Formeln und Wissen aus Finanzierung, Rechnungswesen sowie Jahresabschluss & Bewertung – mit Originalaufgaben aus Tutorien und Beispielklausur. Starte mit der ersten Lektion, sie dauert etwa fünf Minuten.
               </p>
             </>
           ) : (
@@ -110,6 +110,27 @@ export default function Home() {
         </div>
       </Card>
 
+      {/* Gemischtes Training */}
+      <Card className="p-5">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="grid size-12 shrink-0 place-items-center rounded-2xl bg-xp-soft text-ink">
+            <Shuffle className="size-6" aria-hidden />
+          </div>
+          <div className="min-w-0 flex-1 basis-56">
+            <p className="font-semibold">Gemischtes Training</p>
+            <p className="text-sm text-ink-2">10 Aufgaben, Formeln und Wissen im Wechsel – wie in der Klausur. Fällige und schwache Themen kommen zuerst.</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <ButtonLink to="/training?art=gemischt" size="sm">
+              <Shuffle className="size-4" aria-hidden /> Gemischt
+            </ButtonLink>
+            <ButtonLink to="/training?art=wissen" variant="secondary" size="sm">
+              <Lightbulb className="size-4" aria-hidden /> Nur Wissen
+            </ButtonLink>
+          </div>
+        </div>
+      </Card>
+
       <div className="grid gap-4 md:grid-cols-2">
         {/* Tagesziel */}
         <Card className="flex items-center gap-4 p-5">
@@ -130,9 +151,9 @@ export default function Home() {
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="flex items-center gap-2 font-semibold">
-                <RefreshCcw className="size-5 text-fin" aria-hidden /> Formeln zur Wiederholung
+                <RefreshCcw className="size-5 text-fin" aria-hidden /> Zur Wiederholung
               </p>
-              <p className="text-ink-2">{due.length === 0 ? (fresh ? 'Nach den ersten Lektionen plant die App hier deine Wiederholungen.' : 'Heute ist nichts fällig.') : `${due.length} Formel${due.length === 1 ? '' : 'n'} heute fällig`}</p>
+              <p className="text-ink-2">{due.length === 0 ? (fresh ? 'Nach den ersten Lektionen plant die App hier deine Wiederholungen.' : 'Heute ist nichts fällig.') : `${countLabel(due)} heute fällig`}</p>
             </div>
             {due.length > 0 && (
               <ButtonLink to="/wiederholen/start?typ=faellig" size="sm">
@@ -144,7 +165,7 @@ export default function Home() {
             <ul className="mt-3 flex flex-wrap gap-2">
               {due.slice(0, 5).map((f) => (
                 <li key={f.id}>
-                  <Link to={`/formeln/${encodeURIComponent(f.id)}`} className="inline-block rounded-full bg-paper-2 px-3 py-1 text-sm hover:bg-line">
+                  <Link to={cardPath(f)} className="inline-block rounded-full bg-paper-2 px-3 py-1 text-sm hover:bg-line">
                     {f.short ?? f.name}
                   </Link>
                 </li>
@@ -181,13 +202,13 @@ export default function Home() {
             <TriangleAlert className="size-5 text-bad" aria-hidden /> Persönliche Schwächen
           </p>
           {weak.length === 0 ? (
-            <p className="text-ink-3">{fresh ? 'Sobald du übst, erkennt die App, welche Formeln dir schwerfallen.' : 'Keine auffälligen Schwächen – weiter so.'}</p>
+            <p className="text-ink-3">{fresh ? 'Sobald du übst, erkennt die App, welche Formeln und Themen dir schwerfallen.' : 'Keine auffälligen Schwächen – weiter so.'}</p>
           ) : (
             <>
               <ul className="space-y-2">
                 {weak.map((f) => (
                   <li key={f.id} className="flex items-center justify-between gap-3">
-                    <Link to={`/formeln/${encodeURIComponent(f.id)}`} className="min-w-0 truncate hover:underline">
+                    <Link to={cardPath(f)} className="min-w-0 truncate hover:underline">
                       {f.name}
                     </Link>
                     <MasteryBadge level={formulaMastery(state, f.id).level} />
@@ -233,7 +254,7 @@ export default function Home() {
         </Card>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-3">
         <Link to="/arena" className="group">
           <Card className="flex h-full items-center gap-4 p-5 transition group-hover:shadow-[var(--shadow-lift)]">
             <div className="grid size-12 place-items-center rounded-2xl bg-ink text-paper">
@@ -256,9 +277,20 @@ export default function Home() {
             </div>
           </Card>
         </Link>
+        <Link to="/wissen" className="group">
+          <Card className="flex h-full items-center gap-4 p-5 transition group-hover:shadow-[var(--shadow-lift)]">
+            <div className="grid size-12 place-items-center rounded-2xl bg-xp text-ink">
+              <Lightbulb className="size-6" aria-hidden />
+            </div>
+            <div>
+              <p className="font-semibold">Wissen</p>
+              <p className="text-sm text-ink-3">Begriffe, Prinzipien und Begründungen</p>
+            </div>
+          </Card>
+        </Link>
       </div>
       <p className="text-center text-xs text-ink-3">
-        Inhalte: {PARTS.fin.title} ({PARTS.fin.lecturer}), {PARTS.rw.title} ({PARTS.rw.lecturer}), {PARTS.jb.title} ({PARTS.jb.lecturer}) · SoSe 2026 · {formulaById.size} Formeln in {chapterById.size} Kapiteln
+        Inhalte: {PARTS.fin.title} ({PARTS.fin.lecturer}), {PARTS.rw.title} ({PARTS.rw.lecturer}), {PARTS.jb.title} ({PARTS.jb.lecturer}) · SoSe 2026 · {cardsOfKind('formel').length} Formeln und {cardsOfKind('wissen').length} Begriffe in {chapterById.size} Kapiteln
       </p>
     </div>
   )

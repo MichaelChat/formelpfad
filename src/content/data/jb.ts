@@ -13,7 +13,7 @@ export const chapters: Chapter[] = [
   {
     id: 'jb-bewertung',
     part: 'jb',
-    number: 'J1',
+    number: 'J3',
     title: 'Bewertung nach HGB',
     description: 'Anschaffungs- und Herstellungskosten, planmäßige und außerplanmäßige Abschreibung, Niederstwertprinzip, Verbrauchsfolgeverfahren.',
     sources: [src('JB-K4', '1–64'), src('JB-K4A1', '1'), src('JB-K4A2', '1–2')],
@@ -26,7 +26,7 @@ export const chapters: Chapter[] = [
   {
     id: 'jb-guv',
     part: 'jb',
-    number: 'J2',
+    number: 'J4',
     title: 'GuV nach HGB',
     description: 'Gesamtkosten- und Umsatzkostenverfahren, Ergebnisspaltung.',
     sources: [src('JB-K5', '4–31')],
@@ -85,6 +85,7 @@ export const formulas: Formula[] = [
   },
   {
     id: 'jb.niederstwert',
+    kind: 'wissen',
     name: 'Niederstwertprinzip und Wertaufholung',
     short: 'Niederstwertprinzip',
     chapterId: 'jb-bewertung',
@@ -132,6 +133,7 @@ export const formulas: Formula[] = [
   },
   {
     id: 'jb.gkv-ukv',
+    kind: 'wissen',
     name: 'Gesamtkostenverfahren vs. Umsatzkostenverfahren',
     short: 'GKV vs. UKV',
     chapterId: 'jb-guv',

@@ -6,12 +6,12 @@ import { cloudEnabled } from './lib/cloud/config'
 import { Layout } from './ui/Layout'
 import Home from './pages/Home'
 import Path from './pages/Path'
-import Formulas, { FormulaDetail } from './pages/Formulas'
+import Formulas, { FormulaDetail, Knowledge } from './pages/Formulas'
 import Review from './pages/Review'
 import Arena, { ExamSimulation } from './pages/Arena'
 import ProgressPage from './pages/Progress'
 import Settings from './pages/Settings'
-import { ArenaTrainingPage, BossPage, LessonPage, PracticePage, ReviewStartPage } from './pages/Sessions'
+import { ArenaTrainingPage, BossPage, LessonPage, MixedTrainingPage, PracticePage, ReviewStartPage } from './pages/Sessions'
 import { ButtonLink, Empty } from './ui/kit'
 
 function ScrollToTop() {
@@ -34,6 +34,9 @@ export function AppRoutes() {
           <Route path="boss/:chapterId" element={<BossPage />} />
           <Route path="formeln" element={<Formulas />} />
           <Route path="formeln/:id" element={<FormulaDetail />} />
+          <Route path="wissen" element={<Knowledge />} />
+          <Route path="wissen/:id" element={<FormulaDetail />} />
+          <Route path="training" element={<MixedTrainingPage />} />
           <Route path="ueben/:formulaId" element={<PracticePage />} />
           <Route path="wiederholen" element={<Review />} />
           <Route path="wiederholen/start" element={<ReviewStartPage />} />

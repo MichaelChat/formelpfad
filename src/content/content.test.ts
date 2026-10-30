@@ -204,3 +204,46 @@ describe('Generator', () => {
     expect(generateExercise(f, 123)?.prompt).toBe(generateExercise(f, 123)?.prompt)
   })
 })
+
+describe('Wissenskarten', () => {
+  const knowledge = formulas.filter((f) => f.kind === 'wissen')
+  const ACTIVE = ['abrufen', 'einsetzen', 'umstellen', 'anwenden']
+
+  it('es gibt einen nennenswerten Wissensbereich in allen drei Teilen', () => {
+    expect(knowledge.length).toBeGreaterThanOrEqual(35)
+    const parts = new Set(knowledge.map((f) => chapters.find((c) => c.id === f.chapterId)!.part))
+    expect([...parts].sort()).toEqual(['fin', 'jb', 'rw'])
+  })
+
+  it('jede neue Wissenskarte hat Kernaussage, Merkliste und Quelle', () => {
+    for (const f of knowledge.filter((x) => x.id.includes('.w.'))) {
+      expect(f.definition?.length, f.id).toBeGreaterThan(40)
+      expect(f.keyPoints?.length, f.id).toBeGreaterThanOrEqual(3)
+      expect(f.sources.length, f.id).toBeGreaterThan(0)
+    }
+  })
+
+  it('jede Wissenskarte hat mindestens drei Aufgaben, davon eine aktive (abrufen/anwenden)', () => {
+    for (const f of knowledge) {
+      const ex = exercises.filter((e) => e.formulaIds.includes(f.id))
+      expect(ex.length, f.id).toBeGreaterThanOrEqual(3)
+      expect(ex.some((e) => ACTIVE.includes(e.skill)), `${f.id} braucht eine aktive Aufgabe`).toBe(true)
+    }
+  })
+
+  it('jede Wissensaufgabe nennt eine Fundstelle', () => {
+    const ids = new Set(knowledge.map((f) => f.id))
+    for (const e of exercises.filter((x) => ids.has(x.formulaIds[0]!))) expect(e.sources?.length ?? 0, e.id).toBeGreaterThan(0)
+  })
+
+  it('Richtig/Falsch-Aufgaben haben pro Aussage genau eine richtige Antwort', () => {
+    for (const e of exercises) {
+      if (e.type !== 'steps') continue
+      for (const st of e.steps) if (st.kind === 'mc' && st.options.some((o) => o.text === 'Richtig')) expect(st.options.filter((o) => o.correct)).toHaveLength(1)
+    }
+  })
+
+  it('Wissenslektionen enthalten nur Wissenskarten', () => {
+    for (const l of lessons.filter((x) => x.knowledge)) for (const id of l.formulaIds) expect(formulaById.get(id)?.kind, `${l.id}: ${id}`).toBe('wissen')
+  })
+})

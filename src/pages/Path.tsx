@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
-import { Check, Crown, Lock, Play, Star, Timer } from 'lucide-react'
+import { Check, Crown, Lightbulb, Lock, Play, Star, Timer } from 'lucide-react'
 import { chapters, lessons } from '../content'
 import { PARTS, type PartId } from '../content/types'
 import { bossUnlocked, chapterProgress, lessonStatus, nextLesson } from '../lib/engine'
@@ -51,7 +51,7 @@ export default function Path() {
                     {cp.done}/{cp.total}
                   </span>
                 </div>
-                {cp.formulas > 0 && <p className="mt-1 text-xs text-ink-3">{cp.mastered} von {cp.formulas} Formeln beherrscht</p>}
+                {cp.formulas > 0 && <p className="mt-1 text-xs text-ink-3">{cp.mastered} von {cp.formulas} Themen beherrscht</p>}
               </Card>
 
               <ol className="flex flex-col items-center gap-5">
@@ -66,15 +66,21 @@ export default function Path() {
                       <li key={l.id} style={{ transform: `translateX(${offset}px)` }} className="flex flex-col items-center">
                         <button
                           onClick={() => (st === 'gesperrt' && prev ? setLocked({ id: l.id, title: l.title, prev: prev.title }) : navigate(`/lektion/${l.id}`))}
-                          aria-label={`${l.title} – ${st}${isNext ? ', empfohlen' : ''}`}
+                          aria-label={`${l.title}${l.knowledge ? ' (Wissen)' : ''} – ${st}${isNext ? ', empfohlen' : ''}`}
                           className={`relative grid size-[4.5rem] place-items-center rounded-full border-b-[6px] text-white transition active:translate-y-1 active:border-b-2 ${
                             st === 'abgeschlossen' ? `${tone.bg} border-black/25` : st === 'verfügbar' ? `${tone.bg} border-black/25 ${isNext ? 'ring-4 ring-xp ring-offset-4 ring-offset-paper' : ''}` : 'border-line bg-paper-2 text-ink-3'
                           }`}
                         >
                           {st === 'abgeschlossen' ? <Check className="size-8" strokeWidth={3} /> : st === 'gesperrt' ? <Lock className="size-7" /> : isNext ? <Play className="size-8 fill-white" /> : <Star className="size-8" />}
                           {state.lessons[l.id] && state.lessons[l.id]!.best >= 0.9 && <span className="absolute -right-1 -top-1 grid size-6 place-items-center rounded-full bg-xp text-[11px] font-bold text-ink">★</span>}
+                          {l.knowledge && (
+                            <span className="absolute -bottom-1 -left-1 grid size-7 place-items-center rounded-full border-2 border-paper bg-xp text-ink" title="Wissens-Lektion">
+                              <Lightbulb className="size-4" aria-hidden />
+                            </span>
+                          )}
                         </button>
                         <span className="mt-2 max-w-40 text-center text-sm font-semibold">{l.title}</span>
+                        {l.knowledge && <span className="text-[11px] font-semibold uppercase tracking-wide text-ink-3">Wissen</span>}
                         {isNext && <span className="text-xs font-bold uppercase tracking-wide text-xp">Als Nächstes</span>}
                       </li>
                     )

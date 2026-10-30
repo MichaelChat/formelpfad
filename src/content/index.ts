@@ -3,14 +3,50 @@ import * as fin2 from './data/fin-2'
 import * as rw1 from './data/rw-1'
 import * as rw2 from './data/rw-2'
 import * as jb from './data/jb'
+import * as wissenFin from './data/wissen-fin'
+import * as wissenRw from './data/wissen-rw'
+import * as wissenJb from './data/wissen-jb'
+import * as wissenAbruf from './data/wissen-abruf'
 import * as exam from './data/exam'
-import type { Chapter, Exam, Exercise, Formula, Lesson, PartId } from './types'
+import { isKnowledge, type CardKind, type Chapter, type Exam, type Exercise, type Formula, type Lesson, type PartId } from './types'
 
-const modules = [fin1, fin2, rw1, rw2, jb]
+interface ContentModule {
+  chapters: Chapter[]
+  formulas: Formula[]
+  exercises: Exercise[]
+  officialChecks: { id: string; value: number; dec: number; note: string }[]
+  /** Zusätzliche Lektionen für Kapitel aus anderen Dateien (z. B. Wissen zu einem Formelkapitel). */
+  extraLessons?: { chapterId: string; lessons: Lesson[] }[]
+}
 
-export const chapters: Chapter[] = modules.flatMap((m) => m.chapters)
+const modules: ContentModule[] = [fin1, fin2, rw1, rw2, jb, wissenFin, wissenRw, wissenJb, wissenAbruf]
+
+/** Kapitel in fester Reihenfolge je Teil; Zusatzlektionen werden an ihr Kapitel angehängt. */
+const CHAPTER_ORDER = ['fin-grundlagen', 'fin-zeitwert', 'fin-renten', 'fin-anleihen', 'fin-invest', 'fin-aktien', 'fin-portfolio', 'rw-grundlagen', 'rw-bilanz', 'rw-bewertung', 'rw-kosten', 'rw-kostenstellen', 'rw-kostentraeger', 'jb-grundlagen', 'jb-ansatz', 'jb-bewertung', 'jb-guv', 'jb-anhang']
+
+export const chapters: Chapter[] = modules
+  .flatMap((m) => m.chapters)
+  .map((c) => {
+    const extra = modules.flatMap((m) => m.extraLessons ?? []).filter((x) => x.chapterId === c.id).flatMap((x) => x.lessons)
+    return extra.length ? { ...c, lessons: [...c.lessons, ...extra] } : c
+  })
+  .sort((a, b) => {
+    const ia = CHAPTER_ORDER.indexOf(a.id)
+    const ib = CHAPTER_ORDER.indexOf(b.id)
+    return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib)
+  })
 export const formulas: Formula[] = modules.flatMap((m) => m.formulas)
 export const exercises: Exercise[] = [...modules.flatMap((m) => m.exercises), ...exam.exercises]
+
+/** Alle Lernkarten einer Art (Formeln oder Wissen). */
+export function cardsOfKind(kind: CardKind): Formula[] {
+  return formulas.filter((f) => (kind === 'wissen' ? isKnowledge(f) : !isKnowledge(f)))
+}
+
+/** Pfad zur Detailseite einer Karte. */
+export function cardPath(f: Pick<Formula, 'id' | 'kind'>): string {
+  return `${isKnowledge(f) ? '/wissen' : '/formeln'}/${encodeURIComponent(f.id)}`
+}
 export const exams: Exam[] = exam.exams
 export const estimatedPointTasks = exam.estimatedPointTasks
 export const officialChecks = modules.flatMap((m) => m.officialChecks)

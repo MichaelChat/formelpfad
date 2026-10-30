@@ -32,3 +32,14 @@ Diese Inhalte bleiben in der App, sind aber an der Formel gekennzeichnet. Am bes
 ## Nicht automatisch bewertbar
 
 Offene Erklär- und Begründungsfragen (Typ `selfcheck`) werden nach dem Vergleich mit der Musterlösung selbst bewertet (richtig / teilweise / falsch). In der Klausur-Arena geschieht das nach der Abgabe, bevor die Punkte berechnet werden.
+
+## Wissensfragen: Herkunft der Lösungen
+
+- In den „Diskussionsfragen und Antworten“ (Rechnungswesen) ist die richtige Auswahlantwort nur durch **Fettdruck** markiert. Die App liest das maschinell über die Schriftart aus (pdfplumber) und hat es stichprobenartig an den Seitenbildern geprüft. Die eigentliche Frage steht jeweils auf der genannten Vorlesungsfolie.
+- VL 6, Folie 31: Beim Verkaufspreis von 18.200 € ist offiziell „Ja, gewinnbringend“ markiert, bei 15.900 € „unklar“. Die Erklärung im Antwortdokument bezieht sich auf den knappen Fall. Die App übernimmt beides so.
+- JB Kapitel 2, F27 Frage 1 („Welche Finanzberichte enthält der JA zwingend?“): Die offizielle Antwort lautet „Bilanz und GuV“, obwohl Kapitalgesellschaften zusätzlich einen Anhang erstellen müssen (Kapitel 6). Diese Teilfrage wurde deshalb nicht als Aufgabe übernommen.
+- Richtig/Falsch-Begründungen für JB Kapitel 5, F47 stammen aus den Folien desselben Kapitels (GuV-Schema, Anmerkungen zu Steuern). Das offizielle Antwortdokument nennt nur „R-R-R-F-F-F-R“.
+
+## Behobene Programmfehler
+
+- Mehrschrittige Aufgaben (Typ „steps“, z. B. Beispielklausur 1.5) ließen sich nach dem ersten Schritt nicht weiter prüfen: Es wurde immer wieder Schritt 1 ausgewertet. Behoben, mit Regressionstest (`src/test/app.test.tsx`).

@@ -12,7 +12,8 @@ import { initialState, recordAttempt, recordLessonComplete, recordBoss, recordEx
 import { exportState, importState, loadState, saveState, STORAGE_KEY, type StorageLike } from './persistence'
 import { scoreExam, scoreMulti } from './exam'
 import { exams, exerciseById, lessons } from '../content'
-import { buildLessonSession, lessonStatus, nextLesson, dueFormulas, buildReviewSession, formulaMastery } from './engine'
+import { buildLessonSession, lessonStatus, nextLesson, dueFormulas, buildReviewSession, formulaMastery, buildMixedSession, countLabel } from './engine'
+import { formulaById as cardById } from '../content'
 import { evaluate as evalEx, emptyResponse } from './evaluate'
 
 const attempt = (over: Partial<AttemptInput> = {}): AttemptInput => ({
@@ -235,7 +236,8 @@ describe('Fortschritt, Freischaltung und Persistenz', () => {
     const [l0, l1] = lessons.filter((l) => l.chapterId === 'fin-zeitwert')
     expect(lessonStatus(s, l0!)).toBe('verfügbar')
     expect(lessonStatus(s, l1!)).toBe('gesperrt')
-    expect(nextLesson(s)!.id).toBe(l0!.id)
+    // Ohne Lernstand: erste Lektion des ersten Kapitels (F0 Grundbegriffe)
+    expect(nextLesson(s)!.id).toBe(lessons[0]!.id)
     s = recordLessonComplete(s, l0!.id, 0.9, now).state
     expect(lessonStatus(s, l1!)).toBe('verfügbar')
     expect(nextLesson(s)!.id).toBe(l1!.id)
@@ -328,5 +330,28 @@ describe('Klausurbewertung', () => {
     const r1 = recordExam(initialState(now), att, now)
     expect(r1.xp).toBe(30)
     expect(recordExam(r1.state, att, now).xp).toBe(10)
+  })
+})
+
+describe('Gemischtes Training', () => {
+  const kindOf = (exId: string, formulaIds: string[]) => cardById.get(formulaIds[0] ?? '')?.kind ?? (exId ? 'formel' : 'formel')
+  it('mischt ohne Lernstand Formeln und Wissen im Wechsel', () => {
+    const s = buildMixedSession(initialState())!
+    expect(s.items.length).toBe(10)
+    const kinds = s.items.map((it) => (it.kind === 'exercise' ? kindOf(it.exercise.id, it.exercise.formulaIds) : 'x'))
+    expect(kinds).toContain('wissen')
+    expect(kinds.filter((k) => k !== 'wissen').length).toBeGreaterThan(0)
+    // nie mehr als zwei gleiche Arten hintereinander
+    for (let i = 2; i < kinds.length; i++) expect(kinds[i] === kinds[i - 1] && kinds[i] === kinds[i - 2]).toBe(false)
+  })
+  it('„Nur Wissen“ enthält ausschließlich Wissensaufgaben, auch eingeschränkt auf ein Kapitel', () => {
+    const s = buildMixedSession(initialState(), { scope: 'wissen' })!
+    for (const it of s.items) if (it.kind === 'exercise') expect(kindOf(it.exercise.id, it.exercise.formulaIds)).toBe('wissen')
+    const c = buildMixedSession(initialState(), { scope: 'wissen', chapterIds: ['jb-anhang'] })!
+    for (const it of c.items) if (it.kind === 'exercise') expect(it.exercise.chapterId).toBe('jb-anhang')
+  })
+  it('beschriftet Fälliges nach Art', () => {
+    expect(countLabel([{ kind: 'formel' }, { kind: 'wissen' }, { kind: 'wissen' }])).toBe('1 Formel · 2 Begriffe')
+    expect(countLabel([{}, {}])).toBe('2 Formeln')
   })
 })

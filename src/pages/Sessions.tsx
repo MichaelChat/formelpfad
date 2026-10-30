@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useParams, useSearchParams } from 'react-router'
-import { chapters } from '../content'
-import { buildArenaSession, buildBossSession, buildLessonSession, buildPracticeSession, buildReviewSession, buildWeaknessSession, type Session } from '../lib/engine'
+import { cardPath, chapters, formulaById } from '../content'
+import { buildArenaSession, buildBossSession, buildLessonSession, buildMixedSession, buildPracticeSession, buildReviewSession, buildWeaknessSession, type MixScope, type Session } from '../lib/engine'
 import { useStore } from '../state/store'
 import { SessionPlayer } from '../ui/session/SessionPlayer'
 import { ButtonLink, Empty } from '../ui/kit'
@@ -34,7 +34,21 @@ export function PracticePage() {
   const { state } = useStore()
   const session = useOnce(() => buildPracticeSession(state, decodeURIComponent(formulaId)))
   if (!session) return <NotFound />
-  return <SessionPlayer session={session} exitTo={`/formeln/${formulaId}`} />
+  const f = formulaById.get(decodeURIComponent(formulaId))
+  return <SessionPlayer session={session} exitTo={f ? cardPath(f) : '/formeln'} />
+}
+
+/** Gemischtes Training: /training?art=gemischt|wissen|formel&kapitel=… */
+export function MixedTrainingPage() {
+  const [params] = useSearchParams()
+  const { state } = useStore()
+  const art = params.get('art')
+  const scope: MixScope = art === 'wissen' || art === 'formel' ? art : 'gemischt'
+  const ids = (params.get('kapitel') ?? '').split(',').filter((id) => chapters.some((c) => c.id === id))
+  const session = useOnce(() => buildMixedSession(state, { scope, ...(ids.length ? { chapterIds: ids } : {}) }))
+  const back = scope === 'wissen' ? '/wissen' : scope === 'formel' ? '/formeln' : '/'
+  if (!session) return <Empty title="Keine passenden Aufgaben" text="Für diese Auswahl gibt es noch keine Aufgaben." action={<ButtonLink to={back}>Zurück</ButtonLink>} />
+  return <SessionPlayer session={session} exitTo={back} />
 }
 
 export function ReviewStartPage() {

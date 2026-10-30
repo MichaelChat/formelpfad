@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react'
 import { useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
-import { ArrowLeft, Ban, CheckCircle2, Heart, History, Play, Search } from 'lucide-react'
-import { chapterById, chapters, exams, exerciseById, formulaById, formulas } from '../content'
-import { PARTS, SKILL_LABELS, type Formula, type PartId } from '../content/types'
+import { ArrowLeft, Ban, CheckCircle2, GraduationCap, Heart, History, Lightbulb, ListChecks, Play, Search, Shuffle, Sigma } from 'lucide-react'
+import { cardPath, cardsOfKind, chapterById, chapters, exams, exerciseById, formulaById, formulas } from '../content'
+import { isKnowledge, KIND_LABELS, PARTS, SKILL_LABELS, type CardKind, type Formula, type PartId } from '../content/types'
 import { availableSkills, formulaMastery } from '../lib/engine'
 import { relevance } from '../lib/exam'
 import { MASTERY_LABELS, type MasteryLevel } from '../lib/mastery'
@@ -11,7 +11,7 @@ import { formatDayLong, localDay, daysBetween } from '../lib/dates'
 import { toggleFavorite } from '../lib/progress'
 import { useStore } from '../state/store'
 import { ExampleCard, VariableTable } from '../ui/cards'
-import { Button, Card, Empty, MasteryBadge, PageHeader, PartBadge, Progress, Sources, StatusBadge, partTone } from '../ui/kit'
+import { Button, ButtonLink, Card, Empty, MasteryBadge, PageHeader, PartBadge, Progress, Sources, StatusBadge, partTone } from '../ui/kit'
 import { Rich, TeX } from '../ui/Math'
 
 function norm(s: string) {
@@ -23,41 +23,83 @@ function norm(s: string) {
 }
 
 function searchText(f: Formula): string {
-  return norm([f.name, ...(f.aliases ?? []), f.short ?? '', f.tex, f.intuition, f.interpretation, ...f.useCases, ...f.variables.flatMap((v) => [v.sym, v.tex, v.name])].join(' '))
+  return norm([f.name, ...(f.aliases ?? []), f.short ?? '', f.tex, f.definition ?? '', ...(f.keyPoints ?? []), f.intuition, f.interpretation, ...f.useCases, ...f.variables.flatMap((v) => [v.sym, v.tex, v.name])].join(' '))
 }
 
 const index = new Map(formulas.map((f) => [f.id, searchText(f)]))
 
+
 export default function Formulas() {
+  return <CardCollection kind="formel" />
+}
+
+export function Knowledge() {
+  return <CardCollection kind="wissen" />
+}
+
+/** Umschalter zwischen Formelsammlung und Wissensbereich. */
+function KindSwitch({ kind }: { kind: CardKind }) {
+  const tabs: { k: CardKind; to: string; icon: typeof Sigma }[] = [
+    { k: 'formel', to: '/formeln', icon: Sigma },
+    { k: 'wissen', to: '/wissen', icon: Lightbulb },
+  ]
+  return (
+    <nav aria-label="Sammlung wählen" className="mb-4 grid grid-cols-2 rounded-2xl border-2 border-line bg-paper-2/60 p-1 sm:inline-grid">
+      {tabs.map(({ k, to, icon: Icon }) => (
+        <Link key={k} to={to} aria-current={k === kind ? 'page' : undefined} className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold transition ${k === kind ? 'bg-ink text-paper' : 'text-ink-2 hover:bg-paper'}`}>
+          <Icon className="size-4 shrink-0" aria-hidden />
+          {k === 'formel' ? 'Formeln' : 'Wissen'}
+          <span className={`rounded-full px-1.5 text-xs ${k === kind ? 'bg-paper/20' : 'bg-paper'}`}>{cardsOfKind(k).length}</span>
+        </Link>
+      ))}
+    </nav>
+  )
+}
+
+function CardCollection({ kind }: { kind: CardKind }) {
   const { state } = useStore()
   const [q, setQ] = useState('')
   const [chapter, setChapter] = useState('alle')
   const [level, setLevel] = useState<MasteryLevel | 'alle'>('alle')
   const [view, setView] = useState<'alle' | 'favoriten' | 'zuletzt'>('alle')
+  const base = useMemo(() => cardsOfKind(kind), [kind])
+  const label = KIND_LABELS[kind]
+  const knowledge = kind === 'wissen'
+  const chapterOptions = useMemo(() => chapters.filter((c) => base.some((f) => f.chapterId === c.id)), [base])
 
   const results = useMemo(() => {
     const terms = norm(q).split(/\s+/).filter(Boolean)
-    let list = formulas.filter((f) => terms.every((t) => index.get(f.id)!.includes(t)))
+    let list = base.filter((f) => terms.every((t) => index.get(f.id)!.includes(t)))
     if (chapter !== 'alle') list = list.filter((f) => f.chapterId === chapter)
     if (level !== 'alle') list = list.filter((f) => formulaMastery(state, f.id).level === level)
     if (view === 'favoriten') list = list.filter((f) => state.favorites.includes(f.id))
     if (view === 'zuletzt') list = list.filter((f) => state.formula[f.id]?.lastAt).sort((a, b) => (state.formula[b.id]!.lastAt! > state.formula[a.id]!.lastAt! ? 1 : -1))
     return list
-  }, [q, chapter, level, view, state])
+  }, [q, chapter, level, view, state, base])
+
+  const trainHref = `/training?art=${kind}${chapter !== 'alle' ? `&kapitel=${chapter}` : ''}`
 
   return (
     <div>
-      <PageHeader title="Formelsammlung" subtitle={`${formulas.length} Formeln und Konzepte mit Erklärung, Beispiel und Fundstelle`} />
+      <KindSwitch kind={kind} />
+      <PageHeader
+        title={knowledge ? 'Wissen' : 'Formelsammlung'}
+        subtitle={knowledge ? `${base.length} Begriffe, Prinzipien und Zusammenhänge – mit Kernaussage, Merkliste und Fundstelle` : `${base.length} Formeln mit Erklärung, Beispiel und Fundstelle`}
+      >
+        <ButtonLink to={trainHref} variant="secondary" size="sm">
+          <Shuffle className="size-4" aria-hidden /> {knowledge ? 'Wissen trainieren' : 'Formeln trainieren'}
+        </ButtonLink>
+      </PageHeader>
       <div className="mb-4 space-y-3">
         <label className="flex items-center gap-2 rounded-2xl border-2 border-line bg-paper px-3 focus-within:border-ink-3">
           <Search className="size-5 text-ink-3" aria-hidden />
-          <span className="sr-only">Formeln durchsuchen</span>
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Suche nach Name, Symbol (z. B. beta, C_T) oder Begriff" className="min-h-12 w-full bg-transparent outline-none" type="search" />
+          <span className="sr-only">{label.many} durchsuchen</span>
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={knowledge ? 'Suche nach Begriff, z. B. Matching, Rückstellung, Lagebericht' : 'Suche nach Name, Symbol (z. B. beta, C_T) oder Begriff'} className="min-h-12 w-full bg-transparent outline-none" type="search" />
         </label>
         <div className="flex flex-wrap gap-2">
-          <select aria-label="Kapitel filtern" value={chapter} onChange={(e) => setChapter(e.target.value)} className="min-h-10 rounded-xl border-2 border-line bg-paper px-3 text-sm">
+          <select aria-label="Kapitel filtern" value={chapter} onChange={(e) => setChapter(e.target.value)} className="min-h-10 max-w-full rounded-xl border-2 border-line bg-paper px-3 text-sm">
             <option value="alle">Alle Kapitel</option>
-            {chapters.map((c) => (
+            {chapterOptions.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.number} · {c.title}
               </option>
@@ -80,7 +122,7 @@ export default function Formulas() {
       </div>
 
       {results.length === 0 ? (
-        <Empty title="Keine Treffer" text={view === 'favoriten' ? 'Markiere Formeln mit dem Herz, um sie hier zu sammeln.' : view === 'zuletzt' ? 'Du hast noch keine Formeln geübt.' : 'Versuche einen anderen Suchbegriff.'} />
+        <Empty title="Keine Treffer" text={view === 'favoriten' ? `Markiere ${label.many} mit dem Herz, um sie hier zu sammeln.` : view === 'zuletzt' ? `Du hast noch keine ${label.many} geübt.` : 'Versuche einen anderen Suchbegriff.'} />
       ) : (
         <ul className="grid gap-3 md:grid-cols-2">
           {results.map((f) => {
@@ -88,7 +130,7 @@ export default function Formulas() {
             const m = formulaMastery(state, f.id)
             return (
               <li key={f.id}>
-                <Link to={`/formeln/${encodeURIComponent(f.id)}`} className="group block h-full">
+                <Link to={cardPath(f)} className="group block h-full">
                   <Card className={`flex h-full flex-col gap-2 border-l-4 p-4 transition group-hover:shadow-[var(--shadow-lift)] ${partTone[ch.part].border}`}>
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
@@ -102,7 +144,7 @@ export default function Formulas() {
                         <MasteryBadge level={m.level} />
                       </div>
                     </div>
-                    <TeX tex={f.tex} className="pointer-events-none text-sm" label={f.name} />
+                    {isKnowledge(f) ? <Rich as="p" text={f.definition ?? f.intuition} className="line-clamp-3 text-sm text-ink-2" /> : <TeX tex={f.tex} className="pointer-events-none text-sm" label={f.name} />}
                   </Card>
                 </Link>
               </li>
@@ -121,8 +163,9 @@ export function FormulaDetail() {
   const navigate = useNavigate()
   const { state, update } = useStore()
   const f = formulaById.get(decodeURIComponent(id))
-  if (!f) return <Empty title="Formel nicht gefunden" text="Diese Formel gibt es nicht." />
+  if (!f) return <Empty title="Nicht gefunden" text="Diese Karte gibt es nicht." action={<ButtonLink to="/formeln">Zur Formelsammlung</ButtonLink>} />
   const ch = chapterById.get(f.chapterId)!
+  const knowledge = isKnowledge(f)
   const fp = state.formula[f.id]
   const m = formulaMastery(state, f.id)
   const skills = availableSkills(f.id)
@@ -153,9 +196,19 @@ export function FormulaDetail() {
           </button>
         </div>
         {f.aliases && <p className="text-sm text-ink-3">Auch: {f.aliases.join(', ')}</p>}
-        <Card className="p-4">
-          <TeX tex={f.tex} className="text-xl" label={f.name} />
-        </Card>
+        {knowledge ? (
+          <Card className="border-l-4 border-xp p-5">
+            <p className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-ink-3">
+              <Lightbulb className="size-4" aria-hidden /> Kernaussage
+            </p>
+            <Rich as="p" text={f.definition ?? f.intuition} className="text-lg" />
+            {f.tex && <TeX tex={f.tex} className="mt-3" label={f.name} />}
+          </Card>
+        ) : (
+          <Card className="p-4">
+            <TeX tex={f.tex} className="text-xl" label={f.name} />
+          </Card>
+        )}
         {f.statusNote && <p className="rounded-xl bg-paper-2 px-3 py-2 text-sm text-ink-2">Hinweis zur Quelle: {f.statusNote}</p>}
       </header>
 
@@ -179,13 +232,34 @@ export function FormulaDetail() {
         </Section>
       )}
 
-      {/* 5. Intuition */}
-      <Section title="Intuitive Bedeutung">
-        <Rich as="p" text={f.intuition} className="text-ink-2" />
-        <Rich as="p" text={f.interpretation} className="mt-2 text-ink-2" />
-      </Section>
+      {/* 5. Intuition bzw. Merkliste */}
+      {knowledge ? (
+        <Section title="Das Wichtigste" icon={<ListChecks className="size-5 text-good" />}>
+          <ul className="space-y-2">
+            {(f.keyPoints ?? [f.interpretation].filter(Boolean)).map((p, i) => (
+              <li key={i} className="flex gap-3">
+                <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-paper-2 text-xs font-bold">{i + 1}</span>
+                <Rich text={p} className="min-w-0 text-ink-2" />
+              </li>
+            ))}
+          </ul>
+          {f.keyPoints && f.interpretation && <Rich as="p" text={f.interpretation} className="mt-3 text-ink-2" />}
+        </Section>
+      ) : (
+        <Section title="Intuitive Bedeutung">
+          <Rich as="p" text={f.intuition} className="text-ink-2" />
+          <Rich as="p" text={f.interpretation} className="mt-2 text-ink-2" />
+        </Section>
+      )}
+
+      {f.examTip && (
+        <Section title="So kommt es in der Klausur" icon={<GraduationCap className="size-5 text-rw" />}>
+          <Rich as="p" text={f.examTip} className="text-ink-2" />
+        </Section>
+      )}
 
       {/* 6. Wann anwenden / 7. Wann nicht */}
+      {(!knowledge || f.useCases.length > 0 || (f.whenNot?.length ?? 0) > 0) && (
       <div className="grid gap-4 sm:grid-cols-2">
         <Section title="Wann anwenden?" icon={<CheckCircle2 className="size-5 text-good" />}>
           <ul className="space-y-1 text-ink-2">
@@ -211,6 +285,7 @@ export function FormulaDetail() {
           )}
         </Section>
       </div>
+      )}
 
       {f.rearranged && (
         <Section title="Umgestellte Varianten">
@@ -238,15 +313,17 @@ export function FormulaDetail() {
       )}
 
       {/* 9. Fehler */}
-      <Section title="Häufige Fehler">
-        <ul className="space-y-2">
-          {f.mistakes.map((m2, i) => (
-            <li key={i} className="rounded-xl bg-bad-soft/60 px-3 py-2 text-sm">
-              <Rich text={m2} />
-            </li>
-          ))}
-        </ul>
-      </Section>
+      {f.mistakes.length > 0 && (
+        <Section title={knowledge ? 'Typische Verwechslungen' : 'Häufige Fehler'}>
+          <ul className="space-y-2">
+            {f.mistakes.map((m2, i) => (
+              <li key={i} className="rounded-xl bg-bad-soft/60 px-3 py-2 text-sm">
+                <Rich text={m2} />
+              </li>
+            ))}
+          </ul>
+        </Section>
+      )}
 
       {f.supplement && <p className="rounded-xl bg-paper-2 px-3 py-2 text-sm text-ink-3">Ergänzung der App (nicht wörtlich aus den Unterlagen): {f.supplement}</p>}
 
@@ -261,15 +338,19 @@ export function FormulaDetail() {
       </Section>
 
       {f.related && f.related.length > 0 && (
-        <Section title="Verwandte Formeln">
+        <Section title="Hängt zusammen mit">
           <ul className="flex flex-wrap gap-2">
-            {f.related.map((r) => (
-              <li key={r}>
-                <Link to={`/formeln/${encodeURIComponent(r)}`} className="inline-block rounded-full bg-paper-2 px-3 py-1 text-sm hover:bg-line">
-                  {formulaById.get(r)?.name ?? r}
-                </Link>
-              </li>
-            ))}
+            {f.related.map((r) => {
+              const rf = formulaById.get(r)
+              return (
+                <li key={r}>
+                  <Link to={rf ? cardPath(rf) : `/formeln/${encodeURIComponent(r)}`} className="inline-flex items-center gap-1.5 rounded-full bg-paper-2 px-3 py-1 text-sm hover:bg-line">
+                    {rf && (isKnowledge(rf) ? <Lightbulb className="size-3.5 text-ink-3" aria-label="Wissen" /> : <Sigma className="size-3.5 text-ink-3" aria-label="Formel" />)}
+                    {rf?.name ?? r}
+                  </Link>
+                </li>
+              )
+            })}
           </ul>
         </Section>
       )}

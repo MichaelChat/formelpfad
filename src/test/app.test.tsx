@@ -125,3 +125,22 @@ describe('App – Lernzyklus', () => {
     expect((commits[0] as { settings: { name: string } }).settings.name).toBe('Mia')
   })
 })
+
+describe('Schritt-Aufgaben', () => {
+  it('lassen sich Schritt für Schritt bis zum Ende prüfen (Richtig/Falsch mit 4 Aussagen)', async () => {
+    const { ExercisePlayer } = await import('../ui/exercise/ExercisePlayer')
+    const { exerciseById } = await import('../content')
+    const ex = exerciseById.get('rw.w.erfolgswirksam.e3')!
+    expect(ex.type).toBe('steps')
+    const answered: unknown[] = []
+    render(<ExercisePlayer exercise={ex} onAnswered={(a) => answered.push(a)} onNext={() => {}} />)
+    const n = ex.type === 'steps' ? ex.steps.length : 0
+    for (let i = 0; i < n; i++) {
+      const groups = screen.getAllByRole('radiogroup')
+      fireEvent.click(within(groups[i]!).getAllByRole('radio')[0]!)
+      fireEvent.click(screen.getByRole('button', { name: i < n - 1 ? 'Schritt prüfen' : 'Prüfen' }))
+    }
+    expect(answered).toHaveLength(1)
+    expect(screen.getByText(/von 4 Schritten auf Anhieb richtig|Alle Schritte richtig/)).toBeTruthy()
+  })
+})

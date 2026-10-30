@@ -3,6 +3,7 @@ import type { NumFmt } from '../lib/format'
 import type {
   Exercise,
   ExerciseBase,
+  Formula,
   FormulaInputExercise,
   MatchExercise,
   McExercise,
@@ -84,7 +85,8 @@ export function steps(b: Base & { prompt: string; steps: Step[] }): StepsExercis
 
 export function selfcheck(b: Base & { prompt: string; modelAnswer: string[]; keywords?: string[] }): SelfCheckExercise {
   const { prompt, modelAnswer, keywords, ...rest } = b
-  return { ...base(rest), type: 'selfcheck', prompt, modelAnswer, ...(keywords ? { keywords } : {}) }
+  const explanation = rest.explanation?.length ? rest.explanation : ['Vergleiche deine Antwort Punkt für Punkt mit der Musterlösung. Für volle Punkte sollten die Stichworte vorkommen.']
+  return { ...base({ ...rest, explanation }), type: 'selfcheck', prompt, modelAnswer, ...(keywords ? { keywords } : {}) }
 }
 
 export function numStep(label: string, answer: number, f: NumFmt, extra: Partial<Omit<Extract<Step, { kind: 'numeric' }>, 'kind' | 'label' | 'answer' | 'fmt'>> = {}): Step {
@@ -93,6 +95,55 @@ export function numStep(label: string, answer: number, f: NumFmt, extra: Partial
 
 export function mcStep(label: string, options: McOption[], points?: number): Step {
   return { kind: 'mc', label, options, ...(points !== undefined ? { points } : {}) }
+}
+
+/**
+ * Wissenskarte (Begriff, Prinzip, Konzept). Felder wie bei einer Formel, aber ohne Rechenlogik.
+ * `tex` ist optional (kurze Merkformel, falls es eine gibt).
+ */
+export function wissen(
+  c: Pick<Formula, 'id' | 'name' | 'chapterId' | 'sources'> & {
+    definition: string
+    keyPoints: string[]
+  } & Partial<Pick<Formula, 'aliases' | 'short' | 'subchapter' | 'tex' | 'example' | 'mistakes' | 'related' | 'difficulty' | 'status' | 'statusNote' | 'supplement' | 'examTip' | 'useCases' | 'whenNot' | 'assumptions'>>,
+): Formula {
+  return {
+    kind: 'wissen',
+    tex: '',
+    variables: [],
+    assumptions: [],
+    intuition: c.definition,
+    interpretation: '',
+    useCases: [],
+    mistakes: [],
+    difficulty: 1,
+    status: 'geprüft',
+    ...c,
+  }
+}
+
+/**
+ * „Richtig oder falsch?“ – mehrere Aussagen, je eine Entscheidung. Technisch eine Schritt-Aufgabe
+ * mit Auswahlschritten; jede Aussage zählt gleich viel.
+ * statements: [Aussage, richtig?, Begründung]
+ */
+export function trueFalse(b: Base & { prompt: string; statements: [string, boolean, string][] }): StepsExercise {
+  const { prompt, statements, ...rest } = b
+  const st: Step[] = statements.map(([text, isTrue, why]) => ({
+    kind: 'mc',
+    label: text,
+    options: [
+      { id: 'r', text: 'Richtig', ...(isTrue ? { correct: true } : { feedback: why }) },
+      { id: 'f', text: 'Falsch', ...(!isTrue ? { correct: true } : { feedback: why }) },
+    ],
+    points: 1,
+  }))
+  return {
+    ...base({ ...rest, explanation: rest.explanation?.length ? rest.explanation : statements.map(([text, isTrue, why]) => `${isTrue ? '✔ Richtig' : '✘ Falsch'}: ${text} – ${why}`) }),
+    type: 'steps',
+    prompt,
+    steps: st,
+  }
 }
 
 export type { Exercise }

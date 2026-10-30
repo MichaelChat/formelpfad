@@ -13,9 +13,10 @@ try {
   const partName = { fin: 'Finanzierung', rw: 'Rechnungswesen', jb: 'Jahresabschluss & Bewertung' }
 
   // ---------- Formelkatalog ----------
-  let out = '# Formelkatalog\n\n'
+  let out = '# Katalog: Formeln und Wissen\n\n'
   out += '> Automatisch erzeugt mit `npm run docs` aus `src/content/data/*`. Nicht von Hand bearbeiten.\n\n'
-  out += `Insgesamt **${formulas.length} Formeln** in **${chapters.length} Kapiteln**. Status: `
+  const nW = formulas.filter((f) => f.kind === 'wissen').length
+  out += `Insgesamt **${formulas.length - nW} Formeln** und **${nW} Wissenskarten** in **${chapters.length} Kapiteln**. Status: `
   const st = {}
   for (const f of formulas) st[f.status] = (st[f.status] ?? 0) + 1
   out += Object.entries(st).map(([k, v]) => `${k} ${v}`).join(', ') + '.\n\n'
@@ -23,11 +24,11 @@ try {
   for (const ch of chapters) {
     const fs = formulas.filter((f) => f.chapterId === ch.id)
     out += `## ${ch.number} ${ch.title} (${partName[ch.part]})\n\n`
-    out += '| ID | Formel | Darstellung | Status | Aufgaben | Generator | Quellen |\n|---|---|---|---|---|---|---|\n'
+    out += '| ID | Art | Name | Darstellung / Kernaussage | Status | Aufgaben | Generator | Quellen |\n|---|---|---|---|---|---|---|---|\n'
     for (const f of fs) {
       const n = exercises.filter((e) => e.formulaIds.includes(f.id)).length
-      const tex = '$' + f.tex.replace(/\|/g, '\\vert ').replace(/\n/g, ' ') + '$'
-      out += `| \`${f.id}\` | ${f.name} | ${tex} | ${f.status}${f.statusNote ? ' – ' + f.statusNote : ''} | ${n} | ${f.generator ? 'ja' : '–'} | ${f.sources.map(ref).join('; ')} |\n`
+      const shown = f.kind === 'wissen' ? (f.definition ?? f.intuition).replace(/\|/g, '/').slice(0, 160) + ((f.definition ?? f.intuition).length > 160 ? ' …' : '') : '$' + f.tex.replace(/\|/g, '\\vert ').replace(/\n/g, ' ') + '$'
+      out += `| \`${f.id}\` | ${f.kind === 'wissen' ? 'Wissen' : 'Formel'} | ${f.name} | ${shown} | ${f.status}${f.statusNote ? ' – ' + f.statusNote : ''} | ${n} | ${f.generator ? 'ja' : '–'} | ${f.sources.map(ref).join('; ')} |\n`
     }
     out += '\n'
   }
@@ -56,7 +57,7 @@ try {
 
   const inv = readFileSync('docs/course-inventory.md', 'utf8')
   writeFileSync('docs/course-inventory.md', inv.replace(/<!-- STATS:START -->[\s\S]*<!-- STATS:END -->/, stats))
-  console.log(`Formelkatalog: ${formulas.length} Formeln · Inventar-Statistik aktualisiert`)
+  console.log(`Katalog: ${formulas.length} Karten · Inventar-Statistik aktualisiert`)
 } finally {
   await server.close()
 }

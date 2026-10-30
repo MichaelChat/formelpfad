@@ -2,7 +2,7 @@
 
 ## Ziel
 
-„Duolingo für WiWi-Formeln“: Die Formeln aus Finanzierung, Rechnungswesen und Jahresabschluss werden in kurzen Lektionen gelernt, verteilt wiederholt und in einer Klausursimulation geprüft. Alle Inhalte stammen nachweisbar aus den Kursunterlagen.
+„Duolingo für WiWi-Formeln und -Wissen“: Die Formeln und Begriffe aus Finanzierung, Rechnungswesen und Jahresabschluss werden in kurzen Lektionen gelernt, verteilt wiederholt und in einer Klausursimulation geprüft. Alle Inhalte stammen nachweisbar aus den Kursunterlagen.
 
 ## Technik
 
@@ -29,7 +29,8 @@ scripts/       Doku-Generator
 ## Umgesetzte Bausteine
 
 1. Inhaltsmodell mit Quellenpflicht und Status (`geprüft` / `abgeleitet` / `ungeprüft`).
-2. Aufgabentypen: Multiple Choice (auch Mehrfachauswahl, Fehler finden, Lücke), Zuordnen, Formel eintippen (Äquivalenz an Zufallspunkten), Zahl, Schritt-für-Schritt, Selbstkontrolle. Dazu zufallsgenerierte Varianten.
+2. Wissensbereich: Begriffe, Prinzipien und Begründungen als eigene Karten (Kernaussage, Merkliste, Beispiel, Verwechslungen, Fundstellen), eigene Lektionen und gemischtes Training mit Formeln.
+3. Aufgabentypen: Richtig/Falsch-Serien, Multiple Choice (auch Mehrfachauswahl, Fehler finden, Lücke), Zuordnen, Formel eintippen (Äquivalenz an Zufallspunkten), Zahl, Schritt-für-Schritt, Selbstkontrolle. Dazu zufallsgenerierte Varianten.
 3. Eingabeprüfung: Dezimalkomma und -punkt, Tausenderpunkte, Prozent, Vorzeichen, Toleranz, typische Fehlwerte mit Diagnose.
 4. Drei Hinweisstufen, ausführliches Feedback mit Lösungsweg, Formel und Klausurtipp.
 5. Lernpfad mit Lektionen und Boss-Challenges, Formelsammlung mit Detailansicht, Wiederholung, Schwächentraining.

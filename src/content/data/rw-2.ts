@@ -55,6 +55,7 @@ export const formulas: Formula[] = [
   // ------------------------------------------------------------------ R4
   {
     id: 'rw.kostenbegriffe',
+    kind: 'wissen',
     name: 'Grundkosten, Anderskosten, Zusatzkosten, neutraler Aufwand',
     short: 'Kostenbegriffe',
     chapterId: 'rw-kosten',

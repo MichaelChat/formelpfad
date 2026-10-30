@@ -104,6 +104,7 @@ export const formulas: Formula[] = [
   },
   {
     id: 'rw.realisation',
+    kind: 'wissen',
     name: 'Realisationsprinzip',
     aliases: ['revenue recognition principle'],
     short: 'Realisationsprinzip',
@@ -123,6 +124,7 @@ export const formulas: Formula[] = [
   },
   {
     id: 'rw.matching',
+    kind: 'wissen',
     name: 'Matching Principle',
     short: 'Matching',
     chapterId: 'rw-grundlagen',
@@ -140,6 +142,7 @@ export const formulas: Formula[] = [
   },
   {
     id: 'rw.vorsicht',
+    kind: 'wissen',
     name: 'Vorsichts-, Fortführungs- und Konsistenzprinzip',
     aliases: ['Prudence Principle', 'Imparitätsprinzip', 'Going Concern', 'Stetigkeit'],
     short: 'Vorsicht & Co.',
@@ -184,6 +187,7 @@ export const formulas: Formula[] = [
   },
   {
     id: 'rw.ek-komponenten',
+    kind: 'wissen',
     name: 'Komponenten des Eigenkapitals',
     short: 'EK-Komponenten',
     chapterId: 'rw-bilanz',
@@ -450,6 +454,7 @@ export const formulas: Formula[] = [
   },
   {
     id: 'rw.rueckstellung',
+    kind: 'wissen',
     name: 'Rückstellungen',
     short: 'Rückstellungen',
     chapterId: 'rw-bewertung',

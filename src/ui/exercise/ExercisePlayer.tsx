@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { BookOpen, CheckCircle2, Lightbulb, Sparkles, XCircle } from 'lucide-react'
 import { formulaById } from '../../content'
-import type { Exercise } from '../../content/types'
+import { isKnowledge, type Exercise } from '../../content/types'
 import { SKILL_LABELS } from '../../content/types'
 import { emptyResponse, evaluate, evaluateStep, type Evaluation, type Response } from '../../lib/evaluate'
 import { stepWeights } from '../../lib/exam'
@@ -68,7 +68,8 @@ export function ExercisePlayer({ exercise, onAnswered, onNext, nextLabel = 'Weit
     onAnswered({ evaluation: ev, hintsUsed: hints, ms: Date.now() - started.current })
   }
 
-  const activeStep = exercise.type === 'steps' ? stepResults.findIndex((r) => !r) : undefined
+  // Erster Schritt ohne Ergebnis (über die Schritte der Aufgabe, nicht über die bisher gefüllte Ergebnisliste)
+  const activeStep = exercise.type === 'steps' ? exercise.steps.findIndex((_, i) => !stepResults[i]) : undefined
   const currentStep = activeStep === -1 ? undefined : activeStep
 
   const check = () => {
@@ -238,7 +239,13 @@ export function Feedback({ exercise, result, compact }: { exercise: Exercise; re
             {exercise.explanation.map((e, i) => (
               <Rich key={i} as="p" text={e} />
             ))}
-            {!good && formula?.tex && (
+            {!good && formula && isKnowledge(formula) && (
+              <div className="rounded-xl bg-xp-soft/50 px-3 py-2">
+                <p className="text-sm font-semibold">Zum Nachlesen: {formula.name}</p>
+                <Rich as="p" className="text-sm" text={formula.definition ?? formula.intuition} />
+              </div>
+            )}
+            {!good && formula?.tex && !isKnowledge(formula) && (
               <div>
                 <p className="text-sm font-semibold">Relevante Formel: {formula.name}</p>
                 <TeX tex={formula.tex} />

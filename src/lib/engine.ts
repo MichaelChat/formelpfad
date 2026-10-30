@@ -13,7 +13,7 @@ import {
   isGradable,
   lessons,
 } from '../content'
-import type { Chapter, Exercise, Formula, Lesson, Skill } from '../content/types'
+import { isKnowledge, KIND_LABELS, type CardKind, type Chapter, type Exercise, type Formula, type Lesson, type Skill } from '../content/types'
 import { addDays, localDay, type Day } from './dates'
 import { generateExercise } from './generator'
 import { masteryOf, type MasteryInfo } from './mastery'
@@ -181,7 +181,96 @@ export function buildReviewSession(state: AppState, max = 8): Session | null {
     if (items.length >= max) break
   }
   const rng = mulberry32(seedFor(state, 'review'))
-  return { id: `review:${Date.now()}`, mode: 'review', title: 'Fällige Wiederholungen', subtitle: `${due.length} Formel${due.length === 1 ? '' : 'n'} fällig`, items: shuffle(rng, items).slice(0, max) }
+  return { id: `review:${Date.now()}`, mode: 'review', title: 'Fällige Wiederholungen', subtitle: `${countLabel(due)} fällig`, items: interleaveByKind(shuffle(rng, items)).slice(0, max) }
+}
+
+/** „3 Formeln · 2 Begriffe“ */
+export function countLabel(cards: Pick<Formula, 'kind'>[]): string {
+  const k = cards.filter((c) => isKnowledge(c)).length
+  const f = cards.length - k
+  const part = (n: number, kind: CardKind) => `${n} ${n === 1 ? KIND_LABELS[kind].one : KIND_LABELS[kind].many}`
+  return [f ? part(f, 'formel') : '', k ? part(k, 'wissen') : ''].filter(Boolean).join(' · ') || '0 Karten'
+}
+
+/** Abwechselnd Formel- und Wissensaufgaben, damit sich beide Arten mischen (Interleaving). */
+export function interleaveByKind(items: SessionItem[]): SessionItem[] {
+  const kindOf = (it: SessionItem) => {
+    if (it.kind !== 'exercise') return 'x'
+    const f = formulaById.get(it.exercise.formulaIds[0] ?? '')
+    return f && isKnowledge(f) ? 'w' : 'f'
+  }
+  const w = items.filter((i) => kindOf(i) === 'w')
+  const f = items.filter((i) => kindOf(i) === 'f')
+  const rest = items.filter((i) => kindOf(i) === 'x')
+  const out: SessionItem[] = []
+  // Verhältnis beibehalten: die größere Gruppe bekommt entsprechend mehr Plätze
+  let wi = 0
+  let fi = 0
+  while (wi < w.length || fi < f.length) {
+    const takeW = fi >= f.length || (wi < w.length && wi / Math.max(1, w.length) <= fi / Math.max(1, f.length))
+    out.push(takeW ? w[wi++]! : f[fi++]!)
+  }
+  return [...rest, ...out]
+}
+
+export type MixScope = 'gemischt' | CardKind
+
+/**
+ * Gemischtes Training: fällige, schwache und bereits begonnene Karten beider Arten,
+ * je eine Aufgabe pro Karte, abwechselnd Formel und Wissen. Ohne Lernstand: Karten der
+ * ersten Lektion jedes Teils. Optional auf Kapitel und/oder Art beschränkt.
+ */
+export function buildMixedSession(state: AppState, opts: { scope?: MixScope; chapterIds?: string[]; max?: number } = {}): Session | null {
+  const { scope = 'gemischt', chapterIds, max = 10 } = opts
+  const rng = mulberry32(seedFor(state, `mix:${scope}:${chapterIds?.join(',') ?? ''}`))
+  const inScope = (f: Formula) => (scope === 'gemischt' || (scope === 'wissen') === isKnowledge(f)) && (!chapterIds || chapterIds.includes(f.chapterId))
+  const today = localDay()
+  const cards = formulas.filter((f) => inScope(f) && exercisesForFormula(f.id).some(isGradable))
+  const due = cards.filter((f) => isDue(state.formula[f.id]?.srs, today))
+  const weak = weakFormulas(state, 30).filter(inScope)
+  const started = shuffle(rng, cards.filter((f) => (state.formula[f.id]?.attempts ?? 0) > 0))
+  // Noch nichts geübt (oder alles abgearbeitet): auch neue Karten zulassen
+  const fresh = shuffle(rng, cards.filter((f) => !(state.formula[f.id]?.attempts ?? 0)))
+  const order: Formula[] = []
+  const seen = new Set<string>()
+  for (const f of [...due, ...weak, ...started, ...fresh]) {
+    if (seen.has(f.id)) continue
+    seen.add(f.id)
+    order.push(f)
+  }
+  // Beide Arten sollen vorkommen, wenn gemischt
+  const pickFrom = scope === 'gemischt' ? interleaveCards(order) : order
+  const items: SessionItem[] = []
+  const usedEx = new Set<string>()
+  for (const f of pickFrom) {
+    const ex = pickReviewExercises(state, f, 1, `mix:${f.id}`).find((e) => !usedEx.has(e.id) && e.type !== 'selfcheck')
+      ?? pickReviewExercises(state, f, 1, `mix:${f.id}`).find((e) => !usedEx.has(e.id))
+    if (!ex) continue
+    usedEx.add(ex.id)
+    items.push({ kind: 'exercise', exercise: ex })
+    if (items.length >= max) break
+  }
+  if (!items.length) return null
+  const title = scope === 'wissen' ? 'Wissen trainieren' : scope === 'formel' ? 'Formeln trainieren' : 'Gemischtes Training'
+  const chapterTitle = chapterIds?.length === 1 ? chapterById.get(chapterIds[0]!)?.title : undefined
+  return {
+    id: `mix:${scope}:${Date.now()}`,
+    mode: 'practice',
+    title,
+    subtitle: chapterTitle ?? (scope === 'gemischt' ? 'Formeln und Wissen im Wechsel' : `${items.length} Aufgaben`),
+    items: scope === 'gemischt' ? interleaveByKind(items) : items,
+  }
+}
+
+function interleaveCards(cards: Formula[]): Formula[] {
+  const w = cards.filter(isKnowledge)
+  const f = cards.filter((c) => !isKnowledge(c))
+  const out: Formula[] = []
+  for (let i = 0; i < Math.max(w.length, f.length); i++) {
+    if (f[i]) out.push(f[i]!)
+    if (w[i]) out.push(w[i]!)
+  }
+  return out
 }
 
 export function buildWeaknessSession(state: AppState, max = 8): Session | null {

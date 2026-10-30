@@ -107,7 +107,7 @@ export default function Arena() {
           <BarChart className="size-5" aria-hidden /> Was kam in der Klausur vor?
         </h2>
         <p className="mb-3 text-sm text-ink-2">
-          Systematisch ausgewertet: {exams.length} Beispielklausur. Angegeben sind Anzahl der Teilaufgaben und anteilige Punkte je Formel. Aus einer einzigen Klausur lassen sich keine Wahrscheinlichkeiten für die nächste Prüfung ableiten.
+          Systematisch ausgewertet: {exams.length} Beispielklausur. Angegeben sind Anzahl der Teilaufgaben und anteilige Punkte je Formel bzw. Begriff. Aus einer einzigen Klausur lassen sich keine Wahrscheinlichkeiten für die nächste Prüfung ableiten.
         </p>
         <ul className="space-y-2">
           {topFormulas.map(([fid, r]) => (

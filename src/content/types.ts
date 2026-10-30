@@ -88,8 +88,18 @@ export interface GeneratorSpec {
   constraint?: string
 }
 
+/**
+ * Art einer Lernkarte:
+ * - `formel`: Rechenformel bzw. formaler Zusammenhang (Formelsammlung)
+ * - `wissen`: Begriff, Prinzip, Konzept, Begründung (Wissensbereich)
+ * Beide laufen durch dieselbe Lernlogik (Lektionen, Wiederholung, Beherrschung).
+ */
+export type CardKind = 'formel' | 'wissen'
+
 export interface Formula {
   id: string
+  /** Standard: `formel`. */
+  kind?: CardKind
   name: string
   aliases?: string[]
   chapterId: string
@@ -121,6 +131,22 @@ export interface Formula {
   generator?: GeneratorSpec
   /** Kurzes Stichwort für Karten und Auswahlaufgaben. */
   short?: string
+  /** Wissenskarten: Kernaussage in einem bis zwei Sätzen. */
+  definition?: string
+  /** Wissenskarten: die wichtigsten Punkte (Merkliste). */
+  keyPoints?: string[]
+  /** Hinweis, wie das Thema in der Klausur abgefragt wird. */
+  examTip?: string
+}
+
+/** Lernkarte = Formel oder Wissenskarte. */
+export type Card = Formula
+
+export const isKnowledge = (f: Pick<Formula, 'kind'>): boolean => f.kind === 'wissen'
+
+export const KIND_LABELS: Record<CardKind, { one: string; many: string; collection: string }> = {
+  formel: { one: 'Formel', many: 'Formeln', collection: 'Formelsammlung' },
+  wissen: { one: 'Begriff', many: 'Begriffe', collection: 'Wissen' },
 }
 
 export type Origin =
@@ -243,6 +269,8 @@ export type Exercise = McExercise | MatchExercise | FormulaInputExercise | Numer
 
 export interface Lesson {
   id: string
+  /** Wissens-Lektion (wird im Lernpfad gekennzeichnet). */
+  knowledge?: boolean
   title: string
   goal: string
   formulaIds: string[]

@@ -1,6 +1,6 @@
-# Formelpfad – Formeln lernen wie Vokabeln
+# Formelpfad – Formeln und Wissen lernen wie Vokabeln
 
-Lern-App für **Finanzierung, Rechnungswesen und Jahresabschluss & Bewertung** (WiWi 1, SoSe 2026). Kurze Lektionen, Aufgaben mit sofortigem Feedback, verteilte Wiederholung und eine Klausursimulation nach der Beispielklausur. Alle Formeln und Originalaufgaben verweisen auf Dokument und Folie.
+Lern-App für **Finanzierung, Rechnungswesen und Jahresabschluss & Bewertung** (WiWi 1, SoSe 2026). Kurze Lektionen zu **Formeln und Wissen** (Begriffe, Prinzipien, Begründungen), Aufgaben mit sofortigem Feedback, gemischtes Training, verteilte Wiederholung und eine Klausursimulation nach der Beispielklausur. Alle Formeln und Originalaufgaben verweisen auf Dokument und Folie.
 
 Die Seite ist rein statisch und läuft auf GitHub Pages. Es gibt zwei Betriebsarten:
 
@@ -85,12 +85,13 @@ Die PDFs selbst gehören **nicht** ins Repository (`.gitignore` schließt `mater
 - **Aufbereitete Inhalte**: `src/content/`.
   - `sources.ts`: Verzeichnis der Quelldokumente mit Kennungen (`FIN-VL23`, `KLAUSUR-BSP`, …)
   - `data/fin-1.ts`, `fin-2.ts`: Finanzierung · `rw-1.ts`, `rw-2.ts`: Rechnungswesen · `jb.ts`: Jahresabschluss · `exam.ts`: Beispielklausur
+  - `data/wissen-fin.ts`, `wissen-rw.ts`, `wissen-jb.ts`: Wissenskarten und -aufgaben (Begriffe, Prinzipien, Begründungen) · `wissen-abruf.ts`: „Erkläre …“-Abrufaufgaben
   - `types.ts`: das Inhaltsmodell mit Kommentaren zu jedem Feld
 
 ## Inhalte ergänzen oder korrigieren
 
 1. Neues PDF in `sources.ts` eintragen (Kennung, Titel, Dateiname, Art).
-2. In der passenden `data/*.ts` die Formel bzw. Aufgabe anlegen. Pflicht sind `sources` (Kennung + Seite) und `status`:
+2. In der passenden `data/*.ts` die Formel bzw. Aufgabe anlegen. Wissenskarten mit `wissen({ … definition, keyPoints … })`, Richtig/Falsch-Aufgaben mit `trueFalse({ statements: [[Aussage, richtig?, Begründung], …] })`; Lektionen für bestehende Kapitel über `extraLessons`. Pflicht sind `sources` (Kennung + Seite) und `status`:
    `geprüft` (steht so in den Unterlagen und ist nachgerechnet), `abgeleitet` (von dir hergeleitet) oder `ungeprüft` (unklar; wird dann nicht in bewerteten Simulationen benutzt).
    Hilfsfunktionen wie `mc()`, `numeric()`, `steps()`, `opts('*richtig', 'falsch')` stehen in `src/content/helpers.ts`. Am einfachsten kopiert man eine bestehende Aufgabe als Vorlage.
 3. Offizielle Ergebnisse in `officialChecks` der Datei eintragen. Der Test rechnet sie dann nach.
@@ -114,7 +115,7 @@ Die Oberfläche liest alles generisch aus diesem Modell. Neue Kapitel, Lektionen
 
 ## Einschränkungen
 
-- **Nicht alle PDFs sind eingearbeitet.** Es fehlen u. a. JB Kapitel 1, 2, 3 und 6, die Diskussionsfragen, Rechnungswesen-Tutorien 1–3 und 6 sowie die Curraxit-Fallstudie (Liste in `docs/course-inventory.md`).
+- **Nicht alle PDFs sind eingearbeitet.** Es fehlen u. a. die Rechnungswesen-Tutorien 1–3 und 6 sowie die Curraxit-Fallstudie (Liste in `docs/course-inventory.md`).
 - **Nur eine Klausur** liegt vor. „Relevanz“ heißt deshalb Häufigkeit in dieser Klausur, keine Prognose. Die Bearbeitungszeit ist ein Vorschlag der App.
 - **Offene Fragen** (Erklären, Begründen, Buchen im Worksheet als Freitext) lassen sich nicht automatisch bewerten. Hier bewertet man sich selbst anhand der Musterlösung.
 - **Die Anmeldung schützt den Fortschritt, nicht die Inhalte.** Formeln und Aufgaben stehen im JavaScript der Seite. Wer die Adresse kennt, kann sie auch ohne Anmeldung abrufen.

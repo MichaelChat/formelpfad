@@ -1,5 +1,7 @@
 # Lernmodell: Beherrschung, Wiederholung, XP
 
+Formeln und Wissenskarten (Begriffe, Prinzipien) laufen durch dieselbe Lernlogik. Jede Karte hat eine Art (`formel` oder `wissen`); Lektionen, Wiederholung, Beherrschung und Boss-Challenges behandeln beide gleich.
+
 Der gesamte Code liegt in `src/lib/` und ist in `src/lib/logic.test.ts` getestet.
 
 ## Kompetenzdimensionen (mastery.ts)
@@ -11,6 +13,12 @@ Pro Formel werden sieben Fähigkeiten getrennt verfolgt: *erkennen, abrufen, aus
 ## Wiederholung (srs.ts)
 
 Ein vereinfachtes SM-2-Verfahren pro Formel. Richtig: Das Intervall wächst (1 → 3 → Intervall × Faktor). Falsch: zurück auf 1 Tag, Faktor sinkt. Pro Tag zählt nur ein positiver Schritt je Formel. Wer dieselbe Formel fünfmal am Tag richtig rechnet, schiebt sie also nicht künstlich weit in die Zukunft.
+
+## Gemischtes Training (engine.ts, `buildMixedSession`)
+
+10 Aufgaben, je eine pro Karte. Reihenfolge der Auswahl: fällige Karten → schwache Karten → schon begonnene → neue. Bei „gemischt“ wechseln Formel- und Wissensaufgaben ab (Interleaving), nie mehr als zwei gleiche Arten hintereinander. „Nur Wissen“ bzw. „Nur Formeln“ und eine Beschränkung auf Kapitel sind möglich (`/training?art=wissen&kapitel=jb-anhang`). Auch die fälligen Wiederholungen werden nach Art gemischt.
+
+Jede Wissenskarte hat mindestens eine aktive Aufgabe (Erklären/Anwenden), damit „beherrscht“ nicht durch bloßes Wiedererkennen erreicht wird (Inhaltstest).
 
 ## Erfahrungspunkte (gamification.ts)
 
