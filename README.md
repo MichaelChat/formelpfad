@@ -6,7 +6,7 @@ Die App läuft komplett im Browser. Es gibt keinen Server und kein Konto, der Fo
 
 ## Voraussetzungen
 
-- **Node.js 22** oder neuer (`node -v` zeigt die Version) und npm (kommt mit Node).
+- **Node.js 22.22 oder neuer** (`node -v` zeigt die Version) und npm (kommt mit Node). Mit Node 20 startet die App nicht. Einfachste Installation: [nvm](https://github.com/nvm-sh/nvm), dann im Projektordner `nvm install` (liest die Version aus `.nvmrc`).
 - Für die E2E-Tests zusätzlich ein Chromium von Playwright (Installation siehe unten).
 
 ## Installation und Entwicklung
