@@ -10,7 +10,7 @@ Legende Status: **geprüft** = steht so in den Unterlagen und wurde nachgerechne
 
 | ID | Art | Name | Darstellung / Kernaussage | Status | Aufgaben | Generator | Quellen |
 |---|---|---|---|---|---|---|---|
-| `fin.w.grundbegriffe` | Wissen | Investition, Finanzierung und Wertschöpfung | Eine Investition ist eine Entscheidung, die zunächst eine Auszahlung zur Folge hat (Mittelverwendung). Eine Finanzierung ist eine Entscheidung, die zunächst ein … | geprüft | 5 | – | FIN-VL1 S. 7, 10, 15, 16, 20, 24 |
+| `fin.w.grundbegriffe` | Wissen | Investition, Finanzierung und Wertschöpfung | Eine Investition ist eine Entscheidung, die zunächst eine Auszahlung zur Folge hat (Mittelverwendung). Eine Finanzierung ist eine Entscheidung, die zunächst ein … | geprüft | 6 | – | FIN-VL1 S. 7, 10, 15, 16, 20, 24 |
 
 ## F1 Zeitwert des Geldes (Finanzierung)
 
@@ -37,7 +37,7 @@ Legende Status: **geprüft** = steht so in den Unterlagen und wurde nachgerechne
 
 | ID | Art | Name | Darstellung / Kernaussage | Status | Aufgaben | Generator | Quellen |
 |---|---|---|---|---|---|---|---|
-| `fin.anleihearten` | Wissen | Anleihearten, Rating und Gestaltung | Kuponanleihe: feste Zinsen jedes Jahr + Rückzahlung am Ende. Zerobond: nur eine Zahlung am Ende. Floater: variable Zinsen, die sich an kurzfristigen Marktzinsen … | geprüft | 4 | – | FIN-VL23 S. 3–5, 9–10, 15 |
+| `fin.anleihearten` | Wissen | Anleihearten, Rating und Gestaltung | Kuponanleihe: feste Zinsen jedes Jahr + Rückzahlung am Ende. Zerobond: nur eine Zahlung am Ende. Floater: variable Zinsen, die sich an kurzfristigen Marktzinsen … | geprüft | 5 | – | FIN-VL23 S. 3–5, 9–10, 15 |
 | `fin.zerobond` | Formel | Preis eines Zerobonds | $P_Z = \frac{N}{(1+r)^T}$ | geprüft | 5 | ja | FIN-VL23 S. 35–36, 41; KLAUSUR-BSP S. 5 |
 | `fin.yield` | Formel | Yield to Maturity eines Zerobonds | $y = \left(\frac{\text{Nennwert}}{P_Z}\right)^{1/T} - 1$ | geprüft | 2 | ja | FIN-VL23 S. 35–36 |
 | `fin.kuponanleihe` | Formel | Preis einer Kuponanleihe | $P_K = \sum_{t=1}^{T}\frac{k\cdot N}{(1+r)^t} + \frac{N}{(1+r)^T} = \frac{kN}{r}\left(1-\frac{1}{(1+r)^T}\right) + \frac{N}{(1+r)^T}$ | abgeleitet – Summenform aus der Vorlesung geprüft; geschlossene Form von der App abgeleitet und numerisch gegen die Summenform getestet. | 5 | ja | FIN-VL23 S. 37–41; KLAUSUR-BSP S. 5 |
@@ -46,24 +46,24 @@ Legende Status: **geprüft** = steht so in den Unterlagen und wurde nachgerechne
 
 | ID | Art | Name | Darstellung / Kernaussage | Status | Aufgaben | Generator | Quellen |
 |---|---|---|---|---|---|---|---|
-| `fin.kapitalwert` | Formel | Kapitalwert (Net Present Value) | $KW = -AAZ + \sum_{t=1}^{T}\frac{C_t}{(1+r)^t}\qquad(\text{2 Jahre: } KW = -AAZ + \tfrac{C_1}{1+r} + \tfrac{C_2}{(1+r)^2})$ | geprüft | 7 | ja | FIN-VL4 S. 4–7; FIN-T2L S. 2–3 |
+| `fin.kapitalwert` | Formel | Kapitalwert (Net Present Value) | $KW = -AAZ + \sum_{t=1}^{T}\frac{C_t}{(1+r)^t}\qquad(\text{2 Jahre: } KW = -AAZ + \tfrac{C_1}{1+r} + \tfrac{C_2}{(1+r)^2})$ | geprüft | 8 | ja | FIN-VL4 S. 4–7; FIN-T2L S. 2–3 |
 | `fin.kapitalwertrate` | Formel | Kapitalwertrate | $KWR = \frac{BW_{\text{Zahlungen}}}{AAZ}$ | geprüft – Kommt in der Beispielklausur (mit Lösung) vor, aber nicht auf den Vorlesungsfolien SS 2026. Klausurrelevanz im aktuellen Semester unklar – siehe docs/content-issues.md. | 1 | – | KLAUSUR-BSP S. 4 |
 | `fin.amortisation` | Formel | Amortisationsrechnung | $AD = \min\Big\{\,t : \sum_{i=1}^{t} C_i \ge AAZ\Big\}$ | geprüft | 4 | – | FIN-VL4 S. 9–12; FIN-T2L S. 4–9 |
 | `fin.izs` | Formel | Interner Zinssatz (2-Perioden-Projekt) | $0 = -AAZ + \frac{C_1}{1+IZS} + \frac{C_2}{(1+IZS)^2}\;\Rightarrow\; 1+IZS = \frac{C_1 + \sqrt{C_1^2 + 4\,AAZ\,C_2}}{2\,AAZ}$ | abgeleitet – Definition aus der Vorlesung; geschlossene Lösung für zwei Perioden von der App abgeleitet und gegen alle Lösungen aus Klausur/Tutorium getestet. | 2 | ja | FIN-VL4 S. 13–15; FIN-T2L S. 10–11; KLAUSUR-BSP S. 3 |
 | `fin.izs-probleme` | Wissen | Probleme der internen Zinssatzmethode | Der IZS ist eine relative Kennzahl. Er sagt nichts über die absolute Größe des Wertbeitrags und hängt nicht vom geforderten Zins ab – die Kapitalwertmethode sch … | geprüft | 3 | – | FIN-VL4 S. 16–25; FIN-T2L S. 12–13; FIN-T3L S. 2–5 |
-| `fin.w.verfahren` | Wissen | Investitionsrechenverfahren: Stärken und Schwächen | Kapitalwertmethode, Amortisationsrechnung und interne Zinssatzmethode beantworten die Investitionsfrage unterschiedlich gut. Die Kapitalwertmethode gilt als Ref … | geprüft | 4 | – | FIN-VL4 S. 7, 11, 12, 16–25 |
+| `fin.w.verfahren` | Wissen | Investitionsrechenverfahren: Stärken und Schwächen | Kapitalwertmethode, Amortisationsrechnung und interne Zinssatzmethode beantworten die Investitionsfrage unterschiedlich gut. Die Kapitalwertmethode gilt als Ref … | geprüft | 5 | – | FIN-VL4 S. 7, 11, 12, 16–25 |
 
 ## F5 Eigenkapital & Aktien (Finanzierung)
 
 | ID | Art | Name | Darstellung / Kernaussage | Status | Aufgaben | Generator | Quellen |
 |---|---|---|---|---|---|---|---|
-| `fin.ek-fk` | Wissen | Eigen- vs. Fremdkapital und Aktienrechte | Gläubiger haben vertraglich feste Ansprüche und werden in der Insolvenz zuerst bedient; Eigentümer tragen das Restrisiko und bekommen dafür den variablen Gewinn … | geprüft | 4 | – | FIN-VL1 S. 15–16; FIN-VL5 S. 3–5, 11 |
-| `fin.ipo` | Wissen | Empirische IPO-Phänomene | Vier Muster, die man bei Börsengängen immer wieder beobachtet. | geprüft | 3 | – | FIN-VL5 S. 9–10; KLAUSUR-BSP S. 10 |
+| `fin.ek-fk` | Wissen | Eigen- vs. Fremdkapital und Aktienrechte | Gläubiger haben vertraglich feste Ansprüche und werden in der Insolvenz zuerst bedient; Eigentümer tragen das Restrisiko und bekommen dafür den variablen Gewinn … | geprüft | 5 | – | FIN-VL1 S. 15–16; FIN-VL5 S. 3–5, 11 |
+| `fin.ipo` | Wissen | Empirische IPO-Phänomene | Vier Muster, die man bei Börsengängen immer wieder beobachtet. | geprüft | 4 | – | FIN-VL5 S. 9–10; KLAUSUR-BSP S. 10 |
 | `fin.ausschuettung` | Formel | Dividende vs. Aktienrückkauf | $\text{Ex-Dividende: } P_{ex} = P_{cum} - Div\qquad\text{Rückkauf: Kurs unverändert, weniger Aktien}$ | geprüft | 4 | – | FIN-VL5 S. 12–19 |
 | `fin.aktienrendite` | Formel | Aktienrendite (eine Periode) | $r = \frac{Div_1 + P_1 - P_0}{P_0} = \underbrace{\frac{Div_1}{P_0}}_{\text{Dividendenrendite}} + \underbrace{\frac{P_1-P_0}{P_0}}_{\text{Kursrendite}}$ | geprüft | 3 | ja | FIN-VL67 S. 5, 10; FIN-T3L S. 6–10 |
 | `fin.ddm` | Formel | Dividend Discount Model (konstantes Wachstum) | $P_0 = \frac{Div_1}{r-g} = \frac{Div_0\,(1+g)}{r-g},\qquad Div_0 = \text{Ausschüttungsquote}\cdot\text{Gewinn pro Aktie}$ | geprüft – Aufgabe stammt aus der Beispielklausur (älterer Jahrgang). Auf den Folien SS 2026 steht die zugrunde liegende Rentenformel (wachsende ewige Rente), aber kein eigener DDM-Abschnitt. | 2 | ja | KLAUSUR-BSP S. 7–8; FIN-VL23 S. 31 |
 | `fin.w.ipo` | Wissen | Börsengang (IPO): Ablauf | Beim Börsengang (Initial Public Offering) beschafft sich ein Unternehmen Eigenkapital am Kapitalmarkt. Der Prozess reicht von der Auswahl der Emissionsbanken bi … | geprüft | 4 | – | FIN-VL5 S. 9 |
-| `fin.w.ausschuettungspolitik` | Wissen | Ausschüttungspolitik: Dividenden und Aktienrückkäufe | Unternehmen können Gewinne als Dividende ausschütten oder eigene Aktien zurückkaufen. Im perfekten Kapitalmarkt (ohne Steuern) sind beide Wege äquivalent; in de … | geprüft | 4 | – | FIN-VL5 S. 12, 14–18 |
+| `fin.w.ausschuettungspolitik` | Wissen | Ausschüttungspolitik: Dividenden und Aktienrückkäufe | Unternehmen können Gewinne als Dividende ausschütten oder eigene Aktien zurückkaufen. Im perfekten Kapitalmarkt (ohne Steuern) sind beide Wege äquivalent; in de … | geprüft | 5 | – | FIN-VL5 S. 12, 14–18 |
 
 ## F6 Portfoliotheorie & CAPM (Finanzierung)
 
@@ -81,7 +81,7 @@ Legende Status: **geprüft** = steht so in den Unterlagen und wurde nachgerechne
 | `fin.kml` | Formel | Kapitalmarktlinie | $\mu_w = r + \frac{\mu_M - r}{\sigma_M}\,\sigma_w$ | geprüft | 2 | ja | FIN-VL67 S. 41–42; FIN-T5L S. 6–7 |
 | `fin.wml` | Formel | Wertpapiermarktlinie (CAPM) | $\mu_j = r + (\mu_M - r)\,\beta_j$ | geprüft | 7 | ja | FIN-VL67 S. 43–44; KLAUSUR-BSP S. 7 |
 | `fin.beta` | Formel | Beta-Faktor | $\beta_j = \frac{cov(\tilde r_j, \tilde r_M)}{\sigma_M^2} = \frac{\rho_{j,M}\,\sigma_j}{\sigma_M}$ | geprüft | 2 | ja | FIN-VL67 S. 43–46; KLAUSUR-BSP S. 7; FIN-T5L S. 13 |
-| `fin.capm-annahmen` | Wissen | CAPM-Annahmen und Risikozerlegung | Wenn alle Investoren gleich denken, halten alle dasselbe Tangentialportfolio – im Gleichgewicht das Marktportfolio. Dann zählt nur noch der Risikobeitrag zum Ma … | geprüft | 4 | – | FIN-VL67 S. 31, 46; KLAUSUR-BSP S. 6 |
+| `fin.capm-annahmen` | Wissen | CAPM-Annahmen und Risikozerlegung | Wenn alle Investoren gleich denken, halten alle dasselbe Tangentialportfolio – im Gleichgewicht das Marktportfolio. Dann zählt nur noch der Risikobeitrag zum Ma … | geprüft | 5 | – | FIN-VL67 S. 31, 46; KLAUSUR-BSP S. 6 |
 
 ## R1 Grundlagen & Prinzipien (Rechnungswesen)
 
@@ -92,7 +92,7 @@ Legende Status: **geprüft** = steht so in den Unterlagen und wurde nachgerechne
 | `rw.realisation` | Wissen | Realisationsprinzip | Umsatz gibt es, wenn das Geschäft „durch“ ist – nicht schon bei der Bestellung, nicht erst bei der Zahlung. | geprüft | 8 | – | RW-VL1 S. 22–25; KLAUSUR-BSP S. 12 |
 | `rw.matching` | Wissen | Matching Principle | Aufwendungen „wandern“ zu den Umsätzen, die sie verursacht haben – egal, wann gezahlt wurde. | geprüft | 8 | – | RW-VL1 S. 26–28; KLAUSUR-BSP S. 12–13 |
 | `rw.vorsicht` | Wissen | Vorsichts-, Fortführungs- und Konsistenzprinzip | Lieber zu pessimistisch als zu optimistisch: Drohende Verluste sofort zeigen, erhoffte Gewinne erst, wenn sie sicher sind. | geprüft | 6 | – | RW-VL1 S. 29–30; RW-VL23 S. 6 |
-| `rw.w.erfolg` | Wissen | Wirtschaftlicher Erfolg und Gewinn | Der wirtschaftliche Erfolg einer Periode ist die Veränderung des Reinvermögens (Vermögen minus Schulden) – nicht die Veränderung des Kassenbestands. Gewinn ist  … | geprüft | 5 | – | RW-VL1 S. 10–11; RW-D1 S. 1; RW-VL23 S. 28, 35; RW-D2 S. 1; RW-D3 S. 1 |
+| `rw.w.erfolg` | Wissen | Wirtschaftlicher Erfolg und Gewinn | Der wirtschaftliche Erfolg einer Periode ist die Veränderung des Reinvermögens (Vermögen minus Schulden) – nicht die Veränderung des Kassenbestands. Gewinn ist  … | geprüft | 6 | – | RW-VL1 S. 10–11; RW-D1 S. 1; RW-VL23 S. 28, 35; RW-D2 S. 1; RW-D3 S. 1 |
 
 ## R2 Bilanz & GuV (Rechnungswesen)
 
@@ -119,13 +119,13 @@ Legende Status: **geprüft** = steht so in den Unterlagen und wurde nachgerechne
 | `rw.rueckstellung` | Wissen | Rückstellungen | Der Aufwand gehört in die Periode, die die Verpflichtung verursacht hat (Matching) – auch wenn erst später gezahlt wird. | geprüft | 4 | – | RW-VL4 S. 18–20 |
 | `rw.vorraete` | Formel | Vorratsbewertung: Durchschnitt, FIFO, LIFO | $\varnothing\text{-Preis} = \frac{\text{Wert Anfangsbestand} + \text{Wert Zugänge}}{\text{Menge Anfangsbestand} + \text{Menge Zugänge}}$ | geprüft | 1 | – | RW-VL4 S. 21–25 |
 | `rw.ac-vc` | Formel | Voll- vs. Teilkostenrechnung (Absorption vs. Variable Costing) | $G_{AC} - G_{VC} = \Delta\text{Vorrat (Stück)}\cdot\text{fixe Herstellungskosten pro Stück}$ | geprüft | 6 | – | RW-VL4 S. 26–30 |
-| `rw.w.abschreibung` | Wissen | Abschreibungen: Wahl der Methode und Wirkung | Abschreibungen verteilen die Anschaffungskosten einer Sachanlage über die Nutzungsdauer. Die Methode verschiebt Aufwand zwischen den Perioden, ändert aber nicht … | geprüft | 7 | – | RW-VL4 S. 6, 9, 12; RW-D4 S. 1 |
+| `rw.w.abschreibung` | Wissen | Abschreibungen: Wahl der Methode und Wirkung | Abschreibungen verteilen die Anschaffungskosten einer Sachanlage über die Nutzungsdauer. Die Methode verschiebt Aufwand zwischen den Perioden, ändert aber nicht … | geprüft | 8 | – | RW-VL4 S. 6, 9, 12; RW-D4 S. 1 |
 
 ## R4 Kostenbegriffe & Break-even (Rechnungswesen)
 
 | ID | Art | Name | Darstellung / Kernaussage | Status | Aufgaben | Generator | Quellen |
 |---|---|---|---|---|---|---|---|
-| `rw.kostenbegriffe` | Wissen | Grundkosten, Anderskosten, Zusatzkosten, neutraler Aufwand | Grundkosten sind in beiden Welten gleich. Anderskosten stehen intern in anderer Höhe drin, Zusatzkosten nur intern. Neutraler Aufwand ist nur extern Aufwand, in … | geprüft | 3 | – | RW-VL5 S. 5, 10–12 |
+| `rw.kostenbegriffe` | Wissen | Grundkosten, Anderskosten, Zusatzkosten, neutraler Aufwand | Grundkosten sind in beiden Welten gleich. Anderskosten stehen intern in anderer Höhe drin, Zusatzkosten nur intern. Neutraler Aufwand ist nur extern Aufwand, in … | geprüft | 4 | – | RW-VL5 S. 5, 10–12 |
 | `rw.kostenarten` | Formel | Fixe vs. variable und Einzel- vs. Gemeinkosten | $K = k_v\cdot x + K_f\qquad\text{Einzelkosten: direkt zurechenbar}\;\;\text{Gemeinkosten: über Schlüssel}$ | geprüft | 2 | – | RW-VL5 S. 17–25 |
 | `rw.operatives-ergebnis` | Formel | Operatives Ergebnis (lineare Kosten- und Umsatzverläufe) | $\text{Op. Ergebnis} = (p - k_v)\cdot x - K_f$ | geprüft | 4 | ja | RW-VL5 S. 20–21; KLAUSUR-BSP S. 15 |
 | `rw.break-even` | Formel | Break-even-Menge | $x_{BE} = \frac{K_f}{p - k_v}$ | geprüft | 4 | ja | RW-VL5 S. 20–21 |
@@ -137,10 +137,10 @@ Legende Status: **geprüft** = steht so in den Unterlagen und wurde nachgerechne
 
 | ID | Art | Name | Darstellung / Kernaussage | Status | Aufgaben | Generator | Quellen |
 |---|---|---|---|---|---|---|---|
-| `rw.anbau` | Formel | Anbauverfahren | $q_i = \frac{\text{primäre Gemeinkosten der Vorkostenstelle } i}{\text{Leistungseinheiten an die Endkostenstellen}}$ | geprüft | 4 | ja | RW-VL6 S. 12–16, 28 |
+| `rw.anbau` | Formel | Anbauverfahren | $q_i = \frac{\text{primäre Gemeinkosten der Vorkostenstelle } i}{\text{Leistungseinheiten an die Endkostenstellen}}$ | geprüft | 5 | ja | RW-VL6 S. 12–16, 28 |
 | `rw.stufenleiter` | Formel | Stufenleiterverfahren | $q_i = \frac{K^{prim}_i + \sum_{j<i} q_j\,l_{ji}}{\text{Leistung an Endkostenstellen} + \text{an nachfolgende Vorkostenstellen}}$ | geprüft – Die offizielle Klausurlösung rechnet für die Kantine mit dem gerundeten Transportpreis 1,6938 und erhält 14,6334; mit ungerundetem Wert ergibt sich 14,6333 (siehe docs/content-issues.md). Die App akzeptiert beide. | 5 | – | RW-VL6 S. 18–21, 27; KLAUSUR-BSP S. 15–16 |
-| `rw.gleichungsverfahren` | Formel | Gleichungsverfahren | $K^{prim}_i + \sum_{j\ne i} q_j\,l_{ji} = q_i\cdot L_i\quad\Leftrightarrow\quad A\,q = b,\; q = A^{-1}b$ | geprüft | 4 | – | RW-VL6 S. 22–26 |
-| `rw.w.leistungsverrechnung` | Wissen | Innerbetriebliche Leistungsverrechnung verstehen | Die Kosten der Vorkostenstellen werden auf die Endkostenstellen verteilt (Sekundärkostenverrechnung). Anbau-, Stufenleiter- und Gleichungsverfahren unterscheide … | geprüft | 4 | – | RW-VL6 S. 11–15, 29; RW-D6 S. 1 |
+| `rw.gleichungsverfahren` | Formel | Gleichungsverfahren | $K^{prim}_i + \sum_{j\ne i} q_j\,l_{ji} = q_i\cdot L_i\quad\Leftrightarrow\quad A\,q = b,\; q = A^{-1}b$ | geprüft | 5 | – | RW-VL6 S. 22–26 |
+| `rw.w.leistungsverrechnung` | Wissen | Innerbetriebliche Leistungsverrechnung verstehen | Die Kosten der Vorkostenstellen werden auf die Endkostenstellen verteilt (Sekundärkostenverrechnung). Anbau-, Stufenleiter- und Gleichungsverfahren unterscheide … | geprüft | 5 | – | RW-VL6 S. 11–15, 29; RW-D6 S. 1 |
 
 ## R6 Kostenträgerrechnung (Rechnungswesen)
 
@@ -151,7 +151,7 @@ Legende Status: **geprüft** = steht so in den Unterlagen und wurde nachgerechne
 | `rw.zuschlagssatz` | Formel | Gemeinkostenzuschlagssatz | $\text{Zuschlagssatz} = \frac{\text{Gemeinkosten der Kostenstelle}}{\text{zugehörige Bezugsgröße (Einzelkosten bzw. Herstellkosten)}}$ | geprüft | 1 | – | RW-VL7 S. 9–11 |
 | `rw.zuschlagskalkulation` | Formel | Kalkulationsschema der Zuschlagskalkulation | $\underbrace{MEK + MGK}_{\text{Materialkosten}} + \underbrace{FEK + FGK}_{\text{Fertigungskosten}} = HK;\quad SK = HK + VwGK + VtGK$ | geprüft | 5 | – | RW-VL7 S. 9–12; RW-T7L S. 5–7 |
 | `rw.maschinenstundensatz` | Formel | Maschinenstundensatz (und Lohnstundensatz) | $MSS = \frac{\text{maschinenabhängige Gemeinkosten}}{\text{Maschinenlaufzeit}}\qquad FK = FEK + MSS\cdot t_{Masch} + z_{Rest}\cdot FEK$ | geprüft | 2 | ja | RW-VL7 S. 13–18; RW-T7L S. 8–9 |
-| `rw.w.kalkulationsgrenzen` | Wissen | Grenzen der Kalkulation | Berechnete Kosten je Produkt sind nur eine Annäherung: Gemeinkosten werden mit Verteilungsschlüsseln auf Kostenstellen, von Vor- auf Endkostenstellen und weiter … | geprüft | 7 | – | RW-VL6 S. 8, 30–31; RW-D6 S. 1–2; RW-VL7 S. 9, 17, 18, 21; RW-D7 S. 1 |
+| `rw.w.kalkulationsgrenzen` | Wissen | Grenzen der Kalkulation | Berechnete Kosten je Produkt sind nur eine Annäherung: Gemeinkosten werden mit Verteilungsschlüsseln auf Kostenstellen, von Vor- auf Endkostenstellen und weiter … | geprüft | 8 | – | RW-VL6 S. 8, 30–31; RW-D6 S. 1–2; RW-VL7 S. 9, 17, 18, 21; RW-D7 S. 1 |
 
 ## J1 Grundlagen des Jahresabschlusses (Jahresabschluss & Bewertung)
 
@@ -159,9 +159,9 @@ Legende Status: **geprüft** = steht so in den Unterlagen und wurde nachgerechne
 |---|---|---|---|---|---|---|---|
 | `jb.w.inventar` | Wissen | Inventur, Inventar und Bilanz | Auf Grundlage der Inventur wird das Inventar aufgestellt: ein Verzeichnis aller Vermögensgegenstände und Schulden nach Menge und Wert zum Abschlussstichtag, in  … | geprüft | 4 | – | JB-K1 S. 8; JB-K1A S. 1 |
 | `jb.w.adressaten` | Wissen | Adressaten und Qualität von Rechnungslegungsinformationen | Rechnungslegung informiert viele externe Adressaten – nicht nur Kapitalgeber. „Gute“, entscheidungsnützliche Information ist vor allem relevant und verlässlich; … | geprüft | 3 | – | JB-K1 S. 10; JB-K1A S. 1 |
-| `jb.w.prinzipal-agent` | Wissen | Prinzipal-Agent-Problem der Rechnungslegung | Ersteller (Management) und Nutzer (Aktionäre) der Unternehmensrechnung sind getrennt. Das Management ist Agent, die Aktionäre sind Prinzipal; asymmetrische Info … | geprüft | 3 | – | JB-K1 S. 11; JB-K1A S. 1 |
-| `jb.w.rechtsformen` | Wissen | Rechtsformen: Personen- vs. Kapitalgesellschaften | Der wesentliche Unterschied liegt in der Haftung: Gesellschafter von Personengesellschaften haften unbeschränkt mit Geschäfts- und Privatvermögen, bei Kapitalge … | geprüft | 3 | – | JB-K2 S. 5, 9; JB-K2A S. 1 |
-| `jb.w.gob` | Wissen | GoB, Vorsichtsprinzip und Zusammenhang von Bilanz und GuV | Die Grundsätze ordnungsmäßiger Buchführung (GoB) sind im HGB bewusst nicht abschließend definiert und helfen bei praktischen Zweifelsfragen. Deutsche GoB werden … | geprüft | 4 | – | JB-K2 S. 14, 15, 23, 25, 27; JB-K2A S. 1–2 |
+| `jb.w.prinzipal-agent` | Wissen | Prinzipal-Agent-Problem der Rechnungslegung | Ersteller (Management) und Nutzer (Aktionäre) der Unternehmensrechnung sind getrennt. Das Management ist Agent, die Aktionäre sind Prinzipal; asymmetrische Info … | geprüft | 4 | – | JB-K1 S. 11; JB-K1A S. 1 |
+| `jb.w.rechtsformen` | Wissen | Rechtsformen: Personen- vs. Kapitalgesellschaften | Der wesentliche Unterschied liegt in der Haftung: Gesellschafter von Personengesellschaften haften unbeschränkt mit Geschäfts- und Privatvermögen, bei Kapitalge … | geprüft | 4 | – | JB-K2 S. 5, 9; JB-K2A S. 1 |
+| `jb.w.gob` | Wissen | GoB, Vorsichtsprinzip und Zusammenhang von Bilanz und GuV | Die Grundsätze ordnungsmäßiger Buchführung (GoB) sind im HGB bewusst nicht abschließend definiert und helfen bei praktischen Zweifelsfragen. Deutsche GoB werden … | geprüft | 5 | – | JB-K2 S. 14, 15, 23, 25, 27; JB-K2A S. 1–2 |
 
 ## J2 Bilanzierung dem Grunde nach (Ansatz) (Jahresabschluss & Bewertung)
 
@@ -189,7 +189,7 @@ Legende Status: **geprüft** = steht so in den Unterlagen und wurde nachgerechne
 
 | ID | Art | Name | Darstellung / Kernaussage | Status | Aufgaben | Generator | Quellen |
 |---|---|---|---|---|---|---|---|
-| `jb.gkv-ukv` | Wissen | Gesamtkostenverfahren vs. Umsatzkostenverfahren | GKV: Alle Aufwendungen der Periode nach Arten (Material, Personal, Abschreibungen), korrigiert um Bestandsveränderungen. UKV: Nur die Kosten der verkauften Leis … | geprüft | 7 | – | JB-K5 S. 11–18; RW-VL4 S. 28 |
+| `jb.gkv-ukv` | Wissen | Gesamtkostenverfahren vs. Umsatzkostenverfahren | GKV: Alle Aufwendungen der Periode nach Arten (Material, Personal, Abschreibungen), korrigiert um Bestandsveränderungen. UKV: Nur die Kosten der verkauften Leis … | geprüft | 8 | – | JB-K5 S. 11–18; RW-VL4 S. 28 |
 | `jb.w.guv` | Wissen | Die GuV als Bewegungsrechnung | Die GuV ist ein Unterkonto des Eigenkapitals. Sie erklärt die erfolgswirksamen EK-Veränderungen, die nicht durch Transaktionen mit Kapitalgebern bedingt sind, u … | geprüft | 6 | – | JB-K5 S. 4, 6, 9, 10, 13; JB-K5A1 S. 1–2 |
 | `jb.w.gewinnverwendung` | Wissen | Gewinnverwendung in der AG | Vom Jahresüberschuss einer AG müssen Rücklagen gebildet werden: 5 % des (korrigierten) Jahresüberschusses in die gesetzliche Rücklage, bis gesetzliche Rücklage  … | geprüft | 3 | – | JB-K5 S. 45; JB-K5A2 S. 3 |
 
@@ -198,5 +198,5 @@ Legende Status: **geprüft** = steht so in den Unterlagen und wurde nachgerechne
 | ID | Art | Name | Darstellung / Kernaussage | Status | Aufgaben | Generator | Quellen |
 |---|---|---|---|---|---|---|---|
 | `jb.w.anhang` | Wissen | Anhang und Anlagenspiegel | Der Anhang ist Pflichtbestandteil des erweiterten Jahresabschlusses von Kapitalgesellschaften. Er erläutert, ergänzt, entlastet und korrigiert Bilanz und GuV. D … | geprüft | 4 | – | JB-K6 S. 5, 9, 17–19; JB-K6A S. 1 |
-| `jb.w.lagebericht` | Wissen | Lagebericht und Bilanzeid | Der Lagebericht ist nicht Bestandteil des Jahresabschlusses, sondern steht neben ihm und ergänzt ihn um Informationen über Stand und Entwicklung des Unternehmen … | geprüft | 4 | – | JB-K6 S. 21, 23, 31; JB-K6A S. 1–2 |
+| `jb.w.lagebericht` | Wissen | Lagebericht und Bilanzeid | Der Lagebericht ist nicht Bestandteil des Jahresabschlusses, sondern steht neben ihm und ergänzt ihn um Informationen über Stand und Entwicklung des Unternehmen … | geprüft | 5 | – | JB-K6 S. 21, 23, 31; JB-K6A S. 1–2 |
 

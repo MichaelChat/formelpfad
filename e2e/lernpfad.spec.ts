@@ -11,6 +11,7 @@ async function answerCurrent(page: Page) {
   const checks = page.getByRole('checkbox')
   if (await page.getByLabel('Deine Antwort').count()) await page.getByLabel('Deine Antwort').first().fill('1')
   else if (await page.locator('input[aria-label^="Formel für"]').count()) await page.locator('input[aria-label^="Formel für"]').fill('1')
+  else if (await page.getByRole('textbox', { disabled: false }).count()) await page.getByRole('textbox', { disabled: false }).first().fill('1')
   else if (await radios.count()) await radios.first().click()
   else if (await checks.count()) await checks.first().click()
   else if (await page.locator('select').count()) for (const s of await page.locator('select').all()) await s.selectOption({ index: 1 })
@@ -109,5 +110,5 @@ test('Wissensbereich: Suche, Detailansicht und Wissenstraining', async ({ page }
     if (await page.getByRole('button', { name: 'Musterlösung zeigen' }).count()) break
     await page.waitForTimeout(100)
   }
-  await expect(page.getByText(/Richtig!|Nicht ganz|Lösungsweg|Teilweise|Musterlösung/).first()).toBeVisible()
+  await expect(page.getByText(/Richtig!|Richtig wäre|Nicht ganz|Lösungsweg|Teilweise|Musterlösung/).first()).toBeVisible()
 })

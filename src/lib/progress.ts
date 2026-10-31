@@ -99,6 +99,13 @@ export interface AppState {
 
 export const MAX_LOG = 4000
 
+/**
+ * Selbsteinschätzungen (offene Fragen) zählen abgeschwächt. Der Faktor muss über der
+ * „stark“-Schwelle von 0,8 liegen, sonst kann eine Fähigkeit, die nur über offene Fragen
+ * geübt wird, nie als stark gelten (der gleitende Mittelwert erreicht den Faktor nur asymptotisch).
+ */
+export const SELF_ASSESSED_FACTOR = 0.9
+
 export function initialState(now = new Date()): AppState {
   return {
     version: STATE_VERSION,
@@ -186,7 +193,7 @@ export function recordAttempt(state: AppState, a: AttemptInput, now = new Date()
   const outcomeRaw = attemptOutcome(a.correct, a.hintsUsed, a.score)
   for (const fid of a.formulaIds) {
     const fp = formula[fid] ?? { skills: {}, attempts: 0, correct: 0, wrongLog: [] }
-    const outcome = a.selfAssessed ? outcomeRaw * 0.8 : outcomeRaw
+    const outcome = a.selfAssessed ? outcomeRaw * SELF_ASSESSED_FACTOR : outcomeRaw
     const skills = { ...fp.skills, [a.skill]: updateSkill(fp.skills[a.skill], outcome) }
     const diff = a.formulaDifficulty[fid] ?? 2
     const srs = schedule(fp.srs, qualityFrom(a.correct, a.hintsUsed, diff, a.score), day, diff)

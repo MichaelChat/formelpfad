@@ -18,7 +18,9 @@ Ein vereinfachtes SM-2-Verfahren pro Formel. Richtig: Das Intervall wächst (1 �
 
 10 Aufgaben, je eine pro Karte. Reihenfolge der Auswahl: fällige Karten → schwache Karten → schon begonnene → neue. Bei „gemischt“ wechseln Formel- und Wissensaufgaben ab (Interleaving), nie mehr als zwei gleiche Arten hintereinander. „Nur Wissen“ bzw. „Nur Formeln“ und eine Beschränkung auf Kapitel sind möglich (`/training?art=wissen&kapitel=jb-anhang`). Auch die fälligen Wiederholungen werden nach Art gemischt.
 
-Jede Wissenskarte hat mindestens eine aktive Aufgabe (Erklären/Anwenden), damit „beherrscht“ nicht durch bloßes Wiedererkennen erreicht wird (Inhaltstest).
+Jede Wissenskarte hat mindestens eine aktive Aufgabe (Erklären/Anwenden), damit „beherrscht“ nicht durch bloßes Wiedererkennen erreicht wird. Jede Karte mit aktiver Dimension hat außerdem eine **automatisch bewertete** aktive Aufgabe, damit sie auch ohne Selbsteinschätzung beherrschbar ist (beides Inhaltstests).
+
+**Selbsteinschätzung** (offene Fragen) zählt mit Faktor 0,9. Dieser Faktor muss über der Schwelle 0,8 liegen: Bis Version 3 war er 0,8, und eine Fähigkeit, die nur über offene Fragen geübt wurde, konnte die Schwelle nie erreichen (der gleitende Mittelwert nähert sich dem Faktor nur an).
 
 ## Erfahrungspunkte (gamification.ts)
 

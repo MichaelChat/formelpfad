@@ -8,7 +8,7 @@ import { computeStreak, levelFromXp, levelThreshold, xpForAttempt, goalProgress 
 import { addDays, daysBetween, localDay } from './dates'
 import { schedule, qualityFrom, isDue } from './srs'
 import { masteryOf, updateSkill, attemptOutcome } from './mastery'
-import { initialState, recordAttempt, recordLessonComplete, recordBoss, recordExam, type AttemptInput } from './progress'
+import { SELF_ASSESSED_FACTOR, initialState, recordAttempt, recordLessonComplete, recordBoss, recordExam, type AttemptInput } from './progress'
 import { exportState, importState, loadState, saveState, STORAGE_KEY, type StorageLike } from './persistence'
 import { scoreExam, scoreMulti } from './exam'
 import { exams, exerciseById, lessons } from '../content'
@@ -353,5 +353,19 @@ describe('Gemischtes Training', () => {
   it('beschriftet Fälliges nach Art', () => {
     expect(countLabel([{ kind: 'formel' }, { kind: 'wissen' }, { kind: 'wissen' }])).toBe('1 Formel · 2 Begriffe')
     expect(countLabel([{}, {}])).toBe('2 Formeln')
+  })
+})
+
+describe('Beherrschung über offene Fragen', () => {
+  it('eine nur per Selbsteinschätzung geübte Fähigkeit kann die Schwelle 0,8 erreichen', () => {
+    expect(SELF_ASSESSED_FACTOR).toBeGreaterThan(0.8)
+    let v: number | undefined
+    let n = 0
+    while ((v ?? 0) < 0.8 && n < 20) {
+      v = updateSkill(v, attemptOutcome(true, 0) * SELF_ASSESSED_FACTOR)
+      n++
+    }
+    expect(v!).toBeGreaterThanOrEqual(0.8)
+    expect(n).toBeLessThanOrEqual(8)
   })
 })

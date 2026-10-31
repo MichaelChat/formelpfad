@@ -231,6 +231,16 @@ describe('Wissenskarten', () => {
     }
   })
 
+  it('jede Karte mit aktiver Dimension hat eine automatisch bewertete aktive Aufgabe (beherrschbar ohne Selbsteinschätzung)', () => {
+    for (const f of formulas) {
+      const ex = exercises.filter((e) => e.formulaIds.includes(f.id) && e.status !== 'ungeprüft')
+      const gen = (f.generator?.targets ?? []).some((t) => ACTIVE.includes(t.skill))
+      const activeAny = gen || ex.some((e) => ACTIVE.includes(e.skill))
+      const activeAuto = gen || ex.some((e) => ACTIVE.includes(e.skill) && e.type !== 'selfcheck')
+      if (activeAny) expect(activeAuto, f.id).toBe(true)
+    }
+  })
+
   it('jede Wissensaufgabe nennt eine Fundstelle', () => {
     const ids = new Set(knowledge.map((f) => f.id))
     for (const e of exercises.filter((x) => ids.has(x.formulaIds[0]!))) expect(e.sources?.length ?? 0, e.id).toBeGreaterThan(0)

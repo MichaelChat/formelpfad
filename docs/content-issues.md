@@ -43,3 +43,4 @@ Offene Erklär- und Begründungsfragen (Typ `selfcheck`) werden nach dem Verglei
 ## Behobene Programmfehler
 
 - Mehrschrittige Aufgaben (Typ „steps“, z. B. Beispielklausur 1.5) ließen sich nach dem ersten Schritt nicht weiter prüfen: Es wurde immer wieder Schritt 1 ausgewertet. Behoben, mit Regressionstest (`src/test/app.test.tsx`).
+- Karten, deren einzige aktive Aufgabe eine Selbstkontroll-Frage war, konnten nie „beherrscht“ werden: Selbsteinschätzungen zählten mit ×0,8, die Schwelle liegt bei 0,8 und wurde so nie erreicht. Behoben (Faktor 0,9), außerdem hat jede solche Karte jetzt eine automatisch bewertete Anwendungsaufgabe. Bisheriger Fortschritt bleibt erhalten und steigt mit den nächsten Antworten weiter.

@@ -90,6 +90,7 @@ export default function Review() {
           <h2 className="mb-3 flex items-center gap-2 text-xl font-semibold">
             <CalendarClock className="size-5 text-rw" aria-hidden /> Die nächsten 7 Tage
           </h2>
+          <p className="mb-3 text-sm text-ink-3">So viele Formeln und Begriffe werden an diesen Tagen wieder fällig. Die App plant das automatisch: Was du richtig beantwortest, kommt in wachsenden Abständen wieder (1 Tag, 3 Tage, dann länger), Fehler kommen schon am nächsten Tag.</p>
           {upcoming.every((u) => u.count === 0) ? (
             <p className="text-ink-3">Keine geplanten Wiederholungen.</p>
           ) : (
@@ -98,7 +99,7 @@ export default function Review() {
                 <li key={u.day} className="flex items-center gap-3 text-sm">
                   <span className="w-24 shrink-0 text-ink-2">{formatDayLong(u.day)}</span>
                   <span className="h-2 rounded-full bg-rw" style={{ width: `${Math.min(100, u.count * 12)}%`, minWidth: u.count ? 8 : 0 }} aria-hidden />
-                  <span className="text-ink-3">{u.count}</span>
+                  <span className="whitespace-nowrap text-ink-3">{u.count === 0 ? '–' : `${u.count} ${u.count === 1 ? 'Thema' : 'Themen'}`}</span>
                 </li>
               ))}
             </ul>
