@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { parseNumberInput } from './format'
 import { checkChoice, checkFormulaInput, checkNumeric } from './validation'
 import { fmt } from './format'
@@ -349,6 +349,20 @@ describe('Gemischtes Training', () => {
     for (const it of s.items) if (it.kind === 'exercise') expect(kindOf(it.exercise.id, it.exercise.formulaIds)).toBe('wissen')
     const c = buildMixedSession(initialState(), { scope: 'wissen', chapterIds: ['jb-anhang'] })!
     for (const it of c.items) if (it.kind === 'exercise') expect(it.exercise.chapterId).toBe('jb-anhang')
+  })
+  it('„Nur Wissen“ bleibt an jedem Tag rein (Auswahl hängt vom Datum ab)', () => {
+    vi.useFakeTimers()
+    try {
+      for (let d = 0; d < 40; d++) {
+        vi.setSystemTime(new Date(2026, 9, 1 + d, 12))
+        const s = buildMixedSession(initialState())!
+        const w = buildMixedSession(initialState(), { scope: 'wissen' })!
+        for (const it of w.items) if (it.kind === 'exercise') expect(kindOf(it.exercise.id, it.exercise.formulaIds), it.exercise.id).toBe('wissen')
+        expect(s.items.length).toBe(10)
+      }
+    } finally {
+      vi.useRealTimers()
+    }
   })
   it('beschriftet Fälliges nach Art', () => {
     expect(countLabel([{ kind: 'formel' }, { kind: 'wissen' }, { kind: 'wissen' }])).toBe('1 Formel · 2 Begriffe')

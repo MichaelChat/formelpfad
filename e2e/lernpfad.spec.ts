@@ -112,3 +112,37 @@ test('Wissensbereich: Suche, Detailansicht und Wissenstraining', async ({ page }
   }
   await expect(page.getByText(/Richtig!|Richtig wäre|Nicht ganz|Lösungsweg|Teilweise|Musterlösung/).first()).toBeVisible()
 })
+
+test('Karteikarten: Schnellrunde mit Umdrehen, Wischen bzw. Tasten und Abschluss', async ({ page, isMobile }) => {
+  await page.goto('/#/')
+  await page.getByRole('link', { name: /Karteikarten|Karten/ }).first().click()
+  await expect(page.getByRole('heading', { name: 'Karteikarten' })).toBeVisible()
+  await noHorizontalScroll(page)
+  await page.getByRole('button', { name: /^Los$/ }).click()
+  await expect(page.getByText('1/10')).toBeVisible()
+  await noHorizontalScroll(page)
+  // Hauptnavigation ist in der Runde ausgeblendet
+  await expect(page.getByRole('navigation', { name: 'Hauptnavigation' })).toHaveCount(0)
+
+  for (let i = 0; i < 25; i++) {
+    if (await page.getByText('Runde geschafft').count()) break
+    // Karte antippen dreht sie um
+    await page.locator('[data-flip]').click()
+    await expect(page.getByRole('button', { name: /Gewusst/ })).toBeVisible()
+    await noHorizontalScroll(page)
+    if (i === 0 && isMobile) {
+      // Nach rechts wischen = Gewusst
+      const box = (await page.locator('[data-flip]').boundingBox())!
+      const y = box.y + box.height / 2
+      await page.mouse.move(box.x + 40, y)
+      await page.mouse.down()
+      await page.mouse.move(box.x + 120, y, { steps: 5 })
+      await page.mouse.move(box.x + 220, y, { steps: 5 })
+      await page.mouse.up()
+    } else if (i === 0) await page.keyboard.press('2')
+    else await page.getByRole('button', { name: /Gewusst/ }).click()
+    if (i === 0) await expect(page.getByText('2/10')).toBeVisible()
+  }
+  await expect(page.getByText('Runde geschafft')).toBeVisible()
+  await expect(page.getByText(/10 von 10 Karten gewusst/)).toBeVisible()
+})

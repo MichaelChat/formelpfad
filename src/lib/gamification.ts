@@ -14,6 +14,8 @@ export const XP_RULES = {
   repeatFactors: [1, 0.5, 0.2, 0],
   /** Bonus, wenn eine zuvor falsch beantwortete Aufgabe korrigiert wird (einmal pro Tag und Aufgabe). */
   fixBonus: 5,
+  /** Karteikarte „gewusst“ (einmal pro Karte und Tag). */
+  flashcard: 2,
   lessonFirst: 20,
   lessonRepeat: 5,
   bossFirst: 50,

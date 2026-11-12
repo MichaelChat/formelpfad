@@ -16,11 +16,30 @@ Ein vereinfachtes SM-2-Verfahren pro Formel. Richtig: Das Intervall wächst (1 �
 
 ## Gemischtes Training (engine.ts, `buildMixedSession`)
 
-10 Aufgaben, je eine pro Karte. Reihenfolge der Auswahl: fällige Karten → schwache Karten → schon begonnene → neue. Bei „gemischt“ wechseln Formel- und Wissensaufgaben ab (Interleaving), nie mehr als zwei gleiche Arten hintereinander. „Nur Wissen“ bzw. „Nur Formeln“ und eine Beschränkung auf Kapitel sind möglich (`/training?art=wissen&kapitel=jb-anhang`). Auch die fälligen Wiederholungen werden nach Art gemischt.
+10 Aufgaben, je eine pro Karte. Reihenfolge der Auswahl: fällige Karten → schwache Karten → schon begonnene → neue. Bei „gemischt“ wechseln Formel- und Wissensaufgaben ab (Interleaving), nie mehr als zwei gleiche Arten hintereinander. „Nur Wissen“ bzw. „Nur Formeln“ und eine Beschränkung auf Kapitel sind möglich (`/training?art=wissen&kapitel=jb-anhang`). Auch die fälligen Wiederholungen werden nach Art gemischt. Bei „Nur Wissen“/„Nur Formeln“ zählt die Hauptkarte einer Aufgabe (erste `formulaId`). Eine Rechenaufgabe, die nebenbei einen Begriff verlinkt, landet also nicht im reinen Wissenstraining. Ein Test prüft das über 40 Kalendertage, weil die Auswahl vom Datum abhängt.
 
 Jede Wissenskarte hat mindestens eine aktive Aufgabe (Erklären/Anwenden), damit „beherrscht“ nicht durch bloßes Wiedererkennen erreicht wird. Jede Karte mit aktiver Dimension hat außerdem eine **automatisch bewertete** aktive Aufgabe, damit sie auch ohne Selbsteinschätzung beherrschbar ist (beides Inhaltstests).
 
 **Selbsteinschätzung** (offene Fragen) zählt mit Faktor 0,9. Dieser Faktor muss über der Schwelle 0,8 liegen: Bis Version 3 war er 0,8, und eine Fähigkeit, die nur über offene Fragen geübt wurde, konnte die Schwelle nie erreichen (der gleitende Mittelwert nähert sich dem Faktor nur an).
+
+## Karteikarten (flashcards.ts, `/karteikarten`)
+
+Für kurze Lernpausen am Handy. Die Karten entstehen aus vorhandenen Inhalten, es wird nichts neu geschrieben:
+
+- **Formeln:** Name → Formel mit Variablen. Umgekehrt: Formel → Name und erster Satz der Intuition.
+- **Wissen:** Begriff → Definition und bis zu 5 Merkpunkte.
+- **Fragen:** Aufgaben aus Lektionen, Tutorien und Klausur.
+  - Auswahlfragen zeigen vorne alle Möglichkeiten in fester, gemischter Reihenfolge und hinten die richtige.
+  - Richtig/Falsch-Serien werden in einzelne Aussagen zerlegt.
+  - Zufallsgenerierte Varianten sind nicht dabei.
+
+Bewertung ist eine Selbsteinschätzung („Gewusst“/„Nochmal“):
+
+- Sie wirkt auf die Dimension **Abrufen** (Faktor 0,9 wie bei offenen Fragen) und auf die Wiederholungsplanung der Karte. „Nochmal“ macht das Thema morgen fällig.
+- Aufgabenstatistik und Fehlerliste bleiben unberührt.
+- Pro Runde zählt nur die erste Bewertung je Karte. „Nochmal“-Karten kommen in derselben Runde bis zu zweimal wieder, etwa vier Karten später.
+
+Der Stapel „Fällige zuerst“ ordnet so: fällig → Trefferquote unter 70 % → noch nie geübt → Rest.
 
 ## Erfahrungspunkte (gamification.ts)
 
@@ -33,6 +52,7 @@ Jede Wissenskarte hat mindestens eine aktive Aufgabe (Erklären/Anwenden), damit
 | Boss-Challenge bestanden (≥ 70 %) | +50 (sonst +10) |
 | Wiederholungsrunde | +10 (höchstens 3 pro Tag) |
 | Klausursimulation | 0,6 × erreichte Prozent (einmal pro Tag, sonst +10) |
+| Karteikarte „Gewusst“ | +2 (einmal pro Karte und Tag) |
 
 Level: Level n beginnt bei 25·(n−1)·(n+2) XP.
 

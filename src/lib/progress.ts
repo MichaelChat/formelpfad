@@ -12,7 +12,7 @@ import { qualityFrom, schedule, type SrsCard } from './srs'
 
 export const STATE_VERSION = 1
 
-export type Mode = 'lesson' | 'review' | 'weakness' | 'boss' | 'practice' | 'exam' | 'arena'
+export type Mode = 'lesson' | 'review' | 'weakness' | 'boss' | 'practice' | 'exam' | 'arena' | 'flashcard'
 
 export interface AttemptRecord {
   exId: string
@@ -224,6 +224,52 @@ export function recordAttempt(state: AppState, a: AttemptInput, now = new Date()
     },
     log: [...state.log, record].slice(-MAX_LOG),
     daily: bumpDay(state.daily, day, { exercises: 1, correct: a.correct ? 1 : 0, ms: Math.min(a.ms, 10 * 60000) }),
+  }
+  next = addXp(next, xp, now)
+  return { state: next, xp }
+}
+
+export interface FlashcardInput {
+  /** Karten-ID (`karte:…`) – getrennt von Aufgaben-IDs, damit Aufgabenstatistiken unberührt bleiben. */
+  key: string
+  formulaIds: string[]
+  formulaDifficulty: Record<string, 1 | 2 | 3>
+  knew: boolean
+  ms: number
+}
+
+/**
+ * Karteikarte selbst eingeschätzt („Gewusst“ / „Nochmal“).
+ * Wirkt auf die Fähigkeit „abrufen“ (abgeschwächt wie jede Selbsteinschätzung) und auf den
+ * Wiederholungsplan (höchstens ein positiver Schritt pro Tag). XP: wenige Punkte, einmal pro Karte und Tag.
+ * Aufgabenstatistik und Fehlerliste bleiben unberührt.
+ */
+export function recordFlashcard(state: AppState, c: FlashcardInput, now = new Date()): { state: AppState; xp: number } {
+  const day = localDay(now)
+  const iso = now.toISOString()
+  const today = ensureToday(state, day)
+  const repeat = today.correctCount[c.key] ?? 0
+  const xp = c.knew && repeat === 0 ? XP_RULES.flashcard : 0
+  const formula = { ...state.formula }
+  for (const fid of c.formulaIds) {
+    const fp = formula[fid] ?? { skills: {}, attempts: 0, correct: 0, wrongLog: [] }
+    const diff = c.formulaDifficulty[fid] ?? 2
+    formula[fid] = {
+      ...fp,
+      skills: { ...fp.skills, abrufen: updateSkill(fp.skills.abrufen, (c.knew ? 1 : 0) * SELF_ASSESSED_FACTOR) },
+      srs: schedule(fp.srs, qualityFrom(c.knew, 0, diff, c.knew ? 1 : 0), day, diff),
+      attempts: fp.attempts + 1,
+      correct: fp.correct + (c.knew ? 1 : 0),
+      lastAt: iso,
+    }
+  }
+  const record: AttemptRecord = { exId: c.key, at: iso, day, correct: c.knew, score: c.knew ? 1 : 0, hints: 0, ms: c.ms, skill: 'abrufen', formulaIds: c.formulaIds, mode: 'flashcard', type: 'karteikarte', xp }
+  let next: AppState = {
+    ...state,
+    formula,
+    today: { ...today, correctCount: c.knew ? { ...today.correctCount, [c.key]: repeat + 1 } : today.correctCount },
+    log: [...state.log, record].slice(-MAX_LOG),
+    daily: bumpDay(state.daily, day, { exercises: 1, correct: c.knew ? 1 : 0, ms: Math.min(c.ms, 5 * 60000) }),
   }
   next = addXp(next, xp, now)
   return { state: next, xp }

@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useLocation } from 'react-router'
-import { BarChart3, BookOpenText, Home, Lightbulb, Map, RefreshCcw, Settings, Swords } from 'lucide-react'
+import { BarChart3, BookOpenText, Home, Layers, Lightbulb, Map, RefreshCcw, Settings, Swords } from 'lucide-react'
 import { useStore } from '../state/store'
 import { STATUS_LABELS, useCloud } from '../state/cloud'
 import { dueFormulas } from '../lib/engine'
@@ -8,6 +8,7 @@ import { useMemo } from 'react'
 const NAV = [
   { to: '/', label: 'Home', icon: Home, end: true },
   { to: '/lernpfad', label: 'Lernpfad', short: 'Pfad', icon: Map },
+  { to: '/karteikarten', label: 'Karteikarten', short: 'Karten', icon: Layers },
   { to: '/formeln', label: 'Formeln', icon: BookOpenText },
   { to: '/wissen', label: 'Wissen', icon: Lightbulb },
   { to: '/wiederholen', label: 'Wiederholen', short: 'Wiederh.', icon: RefreshCcw, badge: 'due' as const },
@@ -37,7 +38,7 @@ export function Layout() {
   const syncProblem = cloud && (cloud.status === 'offline' || cloud.status === 'error')
   const due = useMemo(() => dueFormulas(state).length, [state])
   const location = useLocation()
-  const inSession = /^\/(lektion|boss|ueben|session|arena\/klausur|arena\/training|wiederholen\/start|training)/.test(location.pathname)
+  const inSession = /^\/(lektion|boss|ueben|session|arena\/klausur|arena\/training|wiederholen\/start|training|karteikarten\/los)/.test(location.pathname)
 
   return (
     <div className="min-h-dvh md:grid md:grid-cols-[15rem_1fr] lg:grid-cols-[17rem_1fr]">
@@ -71,12 +72,12 @@ export function Layout() {
 
       {/* Mobile-Navigation */}
       {!inSession && (
-        <nav aria-label="Hauptnavigation" className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-6 border-t border-line bg-paper/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
+        <nav aria-label="Hauptnavigation" className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-7 border-t border-line bg-paper/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
           {NAV.filter((n) => !n.desktopOnly).map((n) => (
-            <NavLink key={n.to} to={n.to} end={n.end} className={({ isActive }) => `relative flex min-h-16 min-w-0 flex-col items-center justify-center gap-0.5 text-[11px] font-semibold ${isActive ? 'text-ink' : 'text-ink-3'}`}>
+            <NavLink key={n.to} to={n.to} end={n.end} className={({ isActive }) => `relative flex min-h-16 min-w-0 flex-col items-center justify-center gap-0.5 text-[10px] font-semibold ${isActive ? 'text-ink' : 'text-ink-3'}`}>
               {({ isActive }) => (
                 <>
-                  <span className={`grid h-8 w-11 place-items-center rounded-full transition ${isActive ? 'bg-ink text-paper' : ''}`}>
+                  <span className={`grid h-8 w-10 place-items-center rounded-full transition ${isActive ? 'bg-ink text-paper' : ''}`}>
                     <n.icon className="size-5" aria-hidden />
                   </span>
                   {n.short ?? n.label}

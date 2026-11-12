@@ -242,9 +242,16 @@ export function buildMixedSession(state: AppState, opts: { scope?: MixScope; cha
   const pickFrom = scope === 'gemischt' ? interleaveCards(order) : order
   const items: SessionItem[] = []
   const usedEx = new Set<string>()
+  // Bei „Nur Wissen“/„Nur Formeln“ zählt die Hauptkarte der Aufgabe (erste formulaId): eine Rechenaufgabe,
+  // die nebenbei auch einen Begriff verlinkt, gehört nicht ins reine Wissenstraining.
+  const fitsScope = (e: Exercise) => {
+    if (scope === 'gemischt') return true
+    const main = formulaById.get(e.formulaIds[0] ?? '')
+    return !main || (scope === 'wissen') === isKnowledge(main)
+  }
   for (const f of pickFrom) {
-    const ex = pickReviewExercises(state, f, 1, `mix:${f.id}`).find((e) => !usedEx.has(e.id) && e.type !== 'selfcheck')
-      ?? pickReviewExercises(state, f, 1, `mix:${f.id}`).find((e) => !usedEx.has(e.id))
+    const ex = pickReviewExercises(state, f, 5, `mix:${f.id}`).find((e) => !usedEx.has(e.id) && fitsScope(e) && e.type !== 'selfcheck')
+      ?? pickReviewExercises(state, f, 5, `mix:${f.id}`).find((e) => !usedEx.has(e.id) && fitsScope(e))
     if (!ex) continue
     usedEx.add(ex.id)
     items.push({ kind: 'exercise', exercise: ex })

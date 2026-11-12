@@ -144,3 +144,44 @@ describe('Schritt-Aufgaben', () => {
     expect(screen.getByText(/von 4 Schritten auf Anhieb richtig|Alle Schritte richtig/)).toBeTruthy()
   })
 })
+
+describe('Karteikarten', () => {
+  it('Stapel wählen → umdrehen → bewerten → Abschluss; Ergebnis wird gespeichert', async () => {
+    const storage = memoryStorage()
+    mount(storage, '#/karteikarten')
+    // Auswahl: nur Fragen, 10 Karten, aus Kapitel jb-guv
+    fireEvent.click(screen.getByRole('button', { name: /^Formeln/ }))
+    fireEvent.click(screen.getByRole('button', { name: /^Wissen/ }))
+    fireEvent.click(screen.getByRole('button', { name: /^Fragen/ }))
+    expect(screen.getByRole('button', { name: /^Fragen/ }).getAttribute('aria-pressed')).toBe('true')
+    fireEvent.click(screen.getByRole('button', { name: /^10$/ }))
+    fireEvent.click(screen.getByRole('button', { name: /Karten lernen$/ }))
+
+    expect(window.location.hash).toMatch(/karteikarten\/los\?art=frage/)
+    expect(await screen.findByText(/1\/10/)).toBeTruthy()
+    // Vor dem Umdrehen gibt es keine Bewertungsknöpfe
+    expect(screen.queryByRole('button', { name: /Gewusst/ })).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Antwort zeigen' }))
+    fireEvent.click(screen.getByRole('button', { name: /Gewusst/ }))
+    let saved = JSON.parse(storage.map.get('formelpfad:state:v1')!)
+    expect(saved.xp).toBe(2)
+    expect(saved.log.at(-1).mode).toBe('flashcard')
+
+    // Zweite Karte: per Tastatur umdrehen und „Nochmal“ → kommt später erneut, Stapel wächst auf 11
+    fireEvent.keyDown(window, { key: ' ' })
+    fireEvent.keyDown(window, { key: '1' })
+    expect(screen.getByText(/3\/11/)).toBeTruthy()
+
+    // Rest durchgehen
+    for (let i = 0; i < 20 && !screen.queryByText('Runde geschafft'); i++) {
+      fireEvent.click(screen.getByRole('button', { name: 'Antwort zeigen' }))
+      fireEvent.click(screen.getByRole('button', { name: /Gewusst/ }))
+    }
+    expect(screen.getByText('Runde geschafft')).toBeTruthy()
+    expect(screen.getByText(/9 von 10 Karten gewusst/)).toBeTruthy()
+    expect(screen.getByText('Noch nicht sicher')).toBeTruthy()
+    saved = JSON.parse(storage.map.get('formelpfad:state:v1')!)
+    // Nur die erste Bewertung je Karte zählt: 10 Einträge, nicht 11
+    expect(saved.log.filter((l: { mode: string }) => l.mode === 'flashcard')).toHaveLength(10)
+  })
+})

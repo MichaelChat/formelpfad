@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router'
-import { ArrowRight, BookOpenText, Flame, Lightbulb, RefreshCcw, Settings, Shuffle, Sparkles, Swords, Target, TriangleAlert, Zap } from 'lucide-react'
+import { ArrowRight, BookOpenText, Flame, Layers, Lightbulb, RefreshCcw, Settings, Shuffle, Sparkles, Swords, Target, TriangleAlert, Zap } from 'lucide-react'
 import { cardPath, cardsOfKind, chapterById } from '../content'
 import { PARTS } from '../content/types'
 import { dailyQuests } from '../lib/achievements'
@@ -126,6 +126,9 @@ export default function Home() {
             </ButtonLink>
             <ButtonLink to="/training?art=wissen" variant="secondary" size="sm">
               <Lightbulb className="size-4" aria-hidden /> Nur Wissen
+            </ButtonLink>
+            <ButtonLink to="/karteikarten" variant="secondary" size="sm">
+              <Layers className="size-4" aria-hidden /> Karteikarten
             </ButtonLink>
           </div>
         </div>

@@ -169,3 +169,35 @@
 .reduce-motion .anim-shake {
   animation: none;
 }
+
+/* Karteikarten: 3D-Umdrehen. Beide Seiten liegen in derselben Grid-Zelle. */
+.flip {
+  perspective: 1400px;
+  transition: transform 0.2s ease;
+}
+.flip-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transform-style: preserve-3d;
+}
+.flip.is-flipped .flip-inner {
+  transform: rotateY(180deg);
+}
+.flip-face {
+  grid-area: 1 / 1;
+  min-width: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.flip-back {
+  transform: rotateY(180deg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .flip-inner {
+    transition: none;
+  }
+}
+.reduce-motion .flip-inner {
+  transition: none;
+}

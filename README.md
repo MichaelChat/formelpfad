@@ -1,6 +1,6 @@
 # Formelpfad – Formeln und Wissen lernen wie Vokabeln
 
-Lern-App für **Finanzierung, Rechnungswesen und Jahresabschluss & Bewertung** (WiWi 1, SoSe 2026). Kurze Lektionen zu **Formeln und Wissen** (Begriffe, Prinzipien, Begründungen), Aufgaben mit sofortigem Feedback, gemischtes Training, verteilte Wiederholung und eine Klausursimulation nach der Beispielklausur. Alle Formeln und Originalaufgaben verweisen auf Dokument und Folie.
+Lern-App für **Finanzierung, Rechnungswesen und Jahresabschluss & Bewertung** (WiWi 1, SoSe 2026). Kurze Lektionen zu **Formeln und Wissen** (Begriffe, Prinzipien, Begründungen), Aufgaben mit sofortigem Feedback, gemischtes Training, **Karteikarten** für kurze Pausen am Handy, verteilte Wiederholung und eine Klausursimulation nach der Beispielklausur. Alle Formeln und Originalaufgaben verweisen auf Dokument und Folie.
 
 Die Seite ist rein statisch und läuft auf GitHub Pages. Es gibt zwei Betriebsarten:
 
