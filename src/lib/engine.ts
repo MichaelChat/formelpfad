@@ -4,14 +4,15 @@
  */
 import {
   chapterById,
-  chapters,
   exerciseById,
   exercises,
   exercisesForFormula,
   formulaById,
   formulas,
   isGradable,
+  lessonById,
   lessons,
+  scopeOf,
 } from '../content'
 import { isKnowledge, KIND_LABELS, type CardKind, type Chapter, type Exercise, type Formula, type Lesson, type Skill } from '../content/types'
 import { addDays, localDay, type Day } from './dates'
@@ -120,8 +121,9 @@ export function buildPracticeSession(state: AppState, formulaId: string): Sessio
   return { id: `practice:${formulaId}:${Date.now()}`, mode: 'practice', title: `Üben: ${f.name}`, items: [{ kind: 'formula', formulaId }, ...chosen.map((exercise) => ({ kind: 'exercise' as const, exercise }))] }
 }
 
+/** Fällige Karten des aktiven Fachs. */
 export function dueFormulas(state: AppState, today: Day = localDay()): Formula[] {
-  return formulas
+  return scopeOf(state).formulas
     .filter((f) => isDue(state.formula[f.id]?.srs, today))
     .sort((a, b) => overdueDays(state.formula[b.id]!.srs!, today) - overdueDays(state.formula[a.id]!.srs!, today))
 }
@@ -130,7 +132,7 @@ export function upcomingReviews(state: AppState, days: number, today: Day = loca
   const out: { day: Day; count: number }[] = []
   for (let i = 1; i <= days; i++) {
     const d = addDays(today, i)
-    out.push({ day: d, count: formulas.filter((f) => state.formula[f.id]?.srs?.due === d).length })
+    out.push({ day: d, count: scopeOf(state).formulas.filter((f) => state.formula[f.id]?.srs?.due === d).length })
   }
   return out
 }
@@ -138,7 +140,7 @@ export function upcomingReviews(state: AppState, days: number, today: Day = loca
 /** Problematische Formeln: geübt, aber schwach oder kürzlich mehrfach falsch. */
 export function weakFormulas(state: AppState, limit = 8): Formula[] {
   const cutoff = addDays(localDay(), -14)
-  const scored = formulas
+  const scored = scopeOf(state).formulas
     .filter((f) => (state.formula[f.id]?.attempts ?? 0) > 0)
     .map((f) => {
       const m = formulaMastery(state, f.id)
@@ -225,7 +227,8 @@ export function buildMixedSession(state: AppState, opts: { scope?: MixScope; cha
   const rng = mulberry32(seedFor(state, `mix:${scope}:${chapterIds?.join(',') ?? ''}`))
   const inScope = (f: Formula) => (scope === 'gemischt' || (scope === 'wissen') === isKnowledge(f)) && (!chapterIds || chapterIds.includes(f.chapterId))
   const today = localDay()
-  const cards = formulas.filter((f) => inScope(f) && exercisesForFormula(f.id).some(isGradable))
+  // Ausdrücklich gewählte Kapitel gelten unabhängig vom Fach, sonst alle Karten des aktiven Fachs
+  const cards = (chapterIds ? formulas : scopeOf(state).formulas).filter((f) => inScope(f) && exercisesForFormula(f.id).some(isGradable))
   const due = cards.filter((f) => isDue(state.formula[f.id]?.srs, today))
   const weak = weakFormulas(state, 30).filter(inScope)
   const started = shuffle(rng, cards.filter((f) => (state.formula[f.id]?.attempts ?? 0) > 0))
@@ -283,7 +286,8 @@ function interleaveCards(cards: Formula[]): Formula[] {
 export function buildWeaknessSession(state: AppState, max = 8): Session | null {
   const items: SessionItem[] = []
   const seen = new Set<string>()
-  for (const id of state.recentWrong.slice(0, 4)) {
+  const { chapterIds } = scopeOf(state)
+  for (const id of state.recentWrong.filter((x) => chapterIds.has(exerciseById.get(x)?.chapterId ?? '')).slice(0, 4)) {
     const ex = exerciseById.get(id)
     if (ex && isGradable(ex) && !seen.has(id)) {
       seen.add(id)
@@ -387,9 +391,12 @@ export function chapterProgress(state: AppState, chapter: Chapter): { done: numb
   return { done, total: chapter.lessons.length, mastered, formulas: fids.length, bossPassed: !!state.bosses[chapter.id]?.passed }
 }
 
-/** Nächste empfohlene Lektion: erste nicht abgeschlossene, verfügbare Lektion im zuletzt bearbeiteten Teil. */
+/** Nächste empfohlene Lektion im aktiven Fach: erste nicht abgeschlossene, verfügbare Lektion im zuletzt bearbeiteten Teil. */
 export function nextLesson(state: AppState): (Lesson & { chapterId: string; index: number }) | null {
-  const lastLesson = Object.entries(state.lessons).sort((a, b) => b[1].lastAt.localeCompare(a[1].lastAt))[0]
+  const { chapters, chapterIds } = scopeOf(state)
+  const lastLesson = Object.entries(state.lessons)
+    .filter(([id]) => chapterIds.has(lessonById.get(id)?.chapterId ?? ''))
+    .sort((a, b) => b[1].lastAt.localeCompare(a[1].lastAt))[0]
   const lastChapter = lastLesson ? lessons.find((l) => l.id === lastLesson[0])?.chapterId : undefined
   const order = lastChapter ? [...chapters.filter((c) => c.id === lastChapter), ...chapters.slice(chapters.findIndex((c) => c.id === lastChapter) + 1), ...chapters] : chapters
   for (const c of order) {
@@ -400,7 +407,7 @@ export function nextLesson(state: AppState): (Lesson & { chapterId: string; inde
 
 export function currentChapter(state: AppState): Chapter {
   const nl = nextLesson(state)
-  return chapterById.get(nl?.chapterId ?? chapters[0]!.id)!
+  return chapterById.get(nl?.chapterId ?? scopeOf(state).chapters[0]!.id)!
 }
 
 export { BOSS_PASS }

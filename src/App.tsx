@@ -11,6 +11,7 @@ import Review from './pages/Review'
 import Arena, { ExamSimulation } from './pages/Arena'
 import ProgressPage from './pages/Progress'
 import Settings from './pages/Settings'
+import Subjects from './pages/Subjects'
 import FlashcardsSetup, { FlashcardsPlay } from './pages/Flashcards'
 import { ArenaTrainingPage, BossPage, LessonPage, MixedTrainingPage, PracticePage, ReviewStartPage } from './pages/Sessions'
 import { ButtonLink, Empty } from './ui/kit'
@@ -30,6 +31,7 @@ export function AppRoutes() {
       <Routes>
         <Route element={<Layout />}>
           <Route index element={<Home />} />
+          <Route path="faecher" element={<Subjects />} />
           <Route path="lernpfad" element={<Path />} />
           <Route path="lektion/:id" element={<LessonPage />} />
           <Route path="boss/:chapterId" element={<BossPage />} />

@@ -72,6 +72,8 @@ export interface Settings {
   theme: 'system' | 'light' | 'dark'
   bossTimer: boolean
   reduceMotion: boolean
+  /** Aktives Fach; fehlt in älteren Speicherständen (dann gilt DEFAULT_SUBJECT). */
+  subject?: string
 }
 
 export interface AppState {

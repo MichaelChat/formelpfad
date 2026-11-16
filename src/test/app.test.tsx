@@ -185,3 +185,21 @@ describe('Karteikarten', () => {
     expect(saved.log.filter((l: { mode: string }) => l.mode === 'flashcard')).toHaveLength(10)
   })
 })
+
+describe('App – Fächer', () => {
+  it('Fächerübersicht zeigt das aktive Fach und geplante Fächer; Auswahl führt zur Startseite', async () => {
+    mount(memoryStorage(), '#/faecher')
+    expect(screen.getByRole('heading', { name: 'Fächer' })).toBeTruthy()
+    const active = screen.getByRole('button', { name: /Wirtschaftswissenschaften 1/ })
+    expect(active.getAttribute('aria-current')).toBe('true')
+    expect(screen.getByRole('heading', { name: 'Numerik' })).toBeTruthy()
+    expect(screen.getAllByText('In Vorbereitung').length).toBeGreaterThan(0)
+    fireEvent.click(active)
+    expect(await screen.findByText('Willkommen beim Formelpfad')).toBeTruthy()
+  })
+
+  it('Seitenleiste bzw. Startseite verlinken auf den Fachwechsel', () => {
+    mount(memoryStorage())
+    expect(screen.getAllByRole('link', { name: /Fach: Wirtschaftswissenschaften 1/ }).length).toBeGreaterThan(0)
+  })
+})

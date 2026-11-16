@@ -7,8 +7,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router'
 import { ArrowLeftRight, Check, FileText, Layers, Lightbulb, MessageCircleQuestion, RotateCcw, Sigma, Sparkles, X } from 'lucide-react'
-import { chapters } from '../content'
-import { PARTS, type PartId } from '../content/types'
+import { scopeOf, type SubjectScope } from '../content'
+import { PARTS } from '../content/types'
 import { sourceLabel } from '../content/sources'
 import { allCards, buildDeck, cardChapterLabel, type FlashKind, type Flashcard, type FlashSide } from '../lib/flashcards'
 import { recordFlashcard } from '../lib/progress'
@@ -43,10 +43,16 @@ function loadSetup(): Setup {
   return DEFAULT_SETUP
 }
 
-function chapterIdsFor(bereich: string): string[] | undefined {
-  if (bereich === 'alle') return undefined
-  if (bereich in PARTS) return chapters.filter((c) => c.part === bereich).map((c) => c.id)
-  return [bereich]
+/**
+ * Kapitel eines Bereichs, immer innerhalb des aktiven Fachs. Ein gespeicherter Bereich aus
+ * einem anderen Fach fällt auf das ganze aktive Fach zurück. Nie leer (leer hieße „alles“).
+ */
+function chapterIdsFor(bereich: string, scope: SubjectScope): string[] {
+  const all = scope.chapters.map((c) => c.id)
+  let ids = all
+  if ((scope.parts as string[]).includes(bereich)) ids = scope.chapters.filter((c) => c.part === bereich).map((c) => c.id)
+  else if (scope.chapterIds.has(bereich)) ids = [bereich]
+  return ids.length ? ids : ['__kein-kapitel__']
 }
 
 function toQuery(s: Setup): string {
@@ -71,9 +77,11 @@ function fromQuery(p: URLSearchParams): Setup {
 
 export default function FlashcardsSetup() {
   const navigate = useNavigate()
+  const { state } = useStore()
+  const scope = scopeOf(state)
   const [setup, setSetup] = useState<Setup>(loadSetup)
-  const available = useMemo(() => allCards({ kinds: setup.kinds, ...(chapterIdsFor(setup.bereich) ? { chapterIds: chapterIdsFor(setup.bereich)! } : {}) }).length, [setup.kinds, setup.bereich])
-  const counts = useMemo(() => Object.fromEntries((['formel', 'wissen', 'frage'] as FlashKind[]).map((k) => [k, allCards({ kinds: [k], ...(chapterIdsFor(setup.bereich) ? { chapterIds: chapterIdsFor(setup.bereich)! } : {}) }).length])), [setup.bereich])
+  const available = useMemo(() => allCards({ kinds: setup.kinds, chapterIds: chapterIdsFor(setup.bereich, scope) }).length, [setup.kinds, setup.bereich, scope])
+  const counts = useMemo(() => Object.fromEntries((['formel', 'wissen', 'frage'] as FlashKind[]).map((k) => [k, allCards({ kinds: [k], chapterIds: chapterIdsFor(setup.bereich, scope) }).length])), [setup.bereich, scope])
 
   const set = (patch: Partial<Setup>) => setSetup((s) => ({ ...s, ...patch }))
   const toggleKind = (k: FlashKind) => set({ kinds: setup.kinds.includes(k) ? setup.kinds.filter((x) => x !== k) : [...setup.kinds, k] })
@@ -126,12 +134,12 @@ export default function FlashcardsSetup() {
 
         <label className="block">
           <span className="mb-2 block text-sm font-semibold text-ink-2">Bereich</span>
-          <select value={setup.bereich} onChange={(e) => set({ bereich: e.target.value })} className="min-h-12 w-full rounded-xl border-2 border-line bg-paper px-3">
-            <option value="alle">Alle Fächer</option>
-            {(Object.keys(PARTS) as PartId[]).map((p) => (
+          <select value={setup.bereich === 'alle' || (scope.parts as string[]).includes(setup.bereich) || scope.chapterIds.has(setup.bereich) ? setup.bereich : 'alle'} onChange={(e) => set({ bereich: e.target.value })} className="min-h-12 w-full rounded-xl border-2 border-line bg-paper px-3">
+            <option value="alle">Ganz {scope.subject.short}</option>
+            {scope.parts.map((p) => (
               <optgroup key={p} label={PARTS[p].title}>
                 <option value={p}>Ganz {PARTS[p].title}</option>
-                {chapters
+                {scope.chapters
                   .filter((c) => c.part === p)
                   .map((c) => (
                     <option key={c.id} value={c.id}>
@@ -262,8 +270,8 @@ function Player({ onRestart }: { onRestart: () => void }) {
   const navigate = useNavigate()
   const setup = useMemo(() => fromQuery(params), [params])
   const [deck] = useState<Flashcard[]>(() => {
-    const ids = chapterIdsFor(setup.bereich)
-    return buildDeck(state, { kinds: setup.kinds, ...(ids ? { chapterIds: ids } : {}), reverse: setup.reverse, order: setup.order, ...(setup.size ? { size: setup.size } : {}) })
+    const ids = chapterIdsFor(setup.bereich, scopeOf(state))
+    return buildDeck(state, { kinds: setup.kinds, chapterIds: ids, reverse: setup.reverse, order: setup.order, ...(setup.size ? { size: setup.size } : {}) })
   })
   const [queue, setQueue] = useState<Flashcard[]>(deck)
   const [index, setIndex] = useState(0)

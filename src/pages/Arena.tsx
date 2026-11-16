@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router'
 import { BarChart, Clock, FileText, Play, RotateCcw, Swords, Timer } from 'lucide-react'
-import { chapters, examById, exams, formulaById } from '../content'
+import { chapterById, examById, formulaById, scopeOf } from '../content'
 import { PARTS, type Exam, type Exercise } from '../content/types'
 import { emptyResponse, evaluate, type Evaluation, type Response } from '../lib/evaluate'
 import { examExercises, relevance, scoreExam, type ExerciseResult } from '../lib/exam'
@@ -21,7 +21,10 @@ export default function Arena() {
   const [selected, setSelected] = useState<string[]>([])
   const [n, setN] = useState(8)
   const [timed, setTimed] = useState(false)
-  const rel = useMemo(() => relevance(exams), [])
+  const { chapters, exams } = scopeOf(state)
+  const rel = useMemo(() => relevance(exams), [exams])
+  // Nur Simulationen von Klausuren des aktiven Fachs
+  const attemptsHere = state.exams.filter((a) => exams.some((e) => e.id === a.examId))
   const topFormulas = [...rel.entries()].sort((a, b) => b[1].points - a[1].points).slice(0, 10)
 
   return (
@@ -102,6 +105,7 @@ export default function Arena() {
         </div>
       </Card>
 
+      {exams.length > 0 && (
       <Card className="p-5 sm:p-7">
         <h2 className="flex items-center gap-2 text-xl font-semibold">
           <BarChart className="size-5" aria-hidden /> Was kam in der Klausur vor?
@@ -125,12 +129,13 @@ export default function Arena() {
           ))}
         </ul>
       </Card>
+      )}
 
-      {state.exams.length > 0 && (
+      {attemptsHere.length > 0 && (
         <Card className="p-5">
           <h2 className="mb-3 text-xl font-semibold">Bisherige Simulationen</h2>
           <ul className="divide-y divide-line text-sm">
-            {[...state.exams].reverse().map((a) => (
+            {[...attemptsHere].reverse().map((a) => (
               <li key={a.id} className="flex justify-between py-2">
                 <span>
                   {formatDayLong(a.at.slice(0, 10))} · {a.timed ? 'mit Zeitlimit' : 'ohne Zeitdruck'}
@@ -311,7 +316,7 @@ function ExamRunner({ exam, timed }: { exam: Exam; timed: boolean }) {
             <p className="mb-3 text-ink-2">Unter 60 % der Punkte in: {gaps.map((g) => g.number).join(', ')}. Empfohlen: die zugehörigen Kapitel wiederholen.</p>
             <div className="flex flex-wrap gap-2">
               {gapChapters.map((cid) => {
-                const c = chapters.find((x) => x.id === cid)!
+                const c = chapterById.get(cid)!
                 return (
                   <ButtonLink key={cid} to={`/lektion/${c.lessons[0]!.id}`} variant="secondary" size="sm">
                     {c.number} {c.title}

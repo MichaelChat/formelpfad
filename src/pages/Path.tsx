@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { Check, Crown, Lightbulb, Lock, Play, Star, Timer } from 'lucide-react'
-import { chapters, lessons } from '../content'
+import { scopeOf } from '../content'
 import { PARTS, type PartId } from '../content/types'
 import { bossUnlocked, chapterProgress, lessonStatus, nextLesson } from '../lib/engine'
 import { useStore } from '../state/store'
@@ -16,13 +16,15 @@ export default function Path() {
   const [locked, setLocked] = useState<{ id: string; title: string; prev: string } | null>(null)
   const [part, setPart] = useState<PartId | 'all'>('all')
 
+  const { chapters, lessons, parts } = scopeOf(state)
   const shown = chapters.filter((c) => part === 'all' || c.part === part)
+  const tabs: (PartId | 'all')[] = parts.length > 1 ? ['all', ...parts] : []
 
   return (
     <div>
       <PageHeader title="Lernpfad" subtitle="Kurze Lektionen, aufgebaut aus den Vorlesungskapiteln. Am Ende jedes Kapitels wartet eine Boss-Challenge." />
       <div className="mb-6 flex flex-wrap gap-2" role="tablist" aria-label="Teil auswählen">
-        {(['all', 'fin', 'rw', 'jb'] as const).map((p) => (
+        {tabs.map((p) => (
           <button key={p} role="tab" aria-selected={part === p} onClick={() => setPart(p)} className={`min-h-10 rounded-full border-2 px-4 text-sm font-semibold ${part === p ? 'border-ink bg-ink text-paper' : 'border-line hover:border-ink-3'}`}>
             {p === 'all' ? 'Alle' : PARTS[p].title}
           </button>

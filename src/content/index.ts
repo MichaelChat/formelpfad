@@ -8,7 +8,7 @@ import * as wissenRw from './data/wissen-rw'
 import * as wissenJb from './data/wissen-jb'
 import * as wissenAbruf from './data/wissen-abruf'
 import * as exam from './data/exam'
-import { isKnowledge, type CardKind, type Chapter, type Exam, type Exercise, type Formula, type Lesson, type PartId } from './types'
+import { DEFAULT_SUBJECT, isKnowledge, isSubjectId, PARTS, partsOf, SUBJECTS, type CardKind, type Chapter, type Exam, type Exercise, type Formula, type Lesson, type PartId, type Subject, type SubjectId } from './types'
 
 interface ContentModule {
   chapters: Chapter[]
@@ -89,4 +89,65 @@ export function chaptersForPart(part: PartId): Chapter[] {
 /** Nur geprüfte bzw. mathematisch abgeleitete Aufgaben dürfen bewertet werden. */
 export function isGradable(ex: Exercise): boolean {
   return ex.status !== 'ungeprüft'
+}
+
+// ------------------------------------------------------------------ Fächer
+
+/** Fach eines Kapitels (über seinen Teil). */
+export function subjectOfChapter(chapterId: string): SubjectId | undefined {
+  const c = chapterById.get(chapterId)
+  return c ? PARTS[c.part].subject : undefined
+}
+
+/** Fach einer Klausur: abgeleitet aus den Kapiteln ihrer Aufgaben. */
+export function subjectOfExam(exam: Exam): SubjectId | undefined {
+  const cid = exam.sections.flatMap((s) => s.tasks)[0]?.chapterId
+  return cid ? subjectOfChapter(cid) : undefined
+}
+
+/** Alle Inhalte eines Fachs. Seiten und Lern-Engine arbeiten nur mit diesem Ausschnitt. */
+export interface SubjectScope {
+  subject: Subject
+  parts: PartId[]
+  chapters: Chapter[]
+  chapterIds: Set<string>
+  formulas: Formula[]
+  exercises: Exercise[]
+  lessons: typeof lessons
+  exams: Exam[]
+  cardsOfKind: (kind: CardKind) => Formula[]
+}
+
+const scopeCache = new Map<SubjectId, SubjectScope>()
+
+export function scopeFor(id: SubjectId): SubjectScope {
+  const cached = scopeCache.get(id)
+  if (cached) return cached
+  const sChapters = chapters.filter((c) => PARTS[c.part].subject === id)
+  const chapterIds = new Set(sChapters.map((c) => c.id))
+  const sFormulas = formulas.filter((f) => chapterIds.has(f.chapterId))
+  const scope: SubjectScope = {
+    subject: SUBJECTS[id],
+    parts: partsOf(id),
+    chapters: sChapters,
+    chapterIds,
+    formulas: sFormulas,
+    exercises: exercises.filter((e) => chapterIds.has(e.chapterId)),
+    lessons: lessons.filter((l) => chapterIds.has(l.chapterId)),
+    exams: exams.filter((e) => subjectOfExam(e) === id),
+    cardsOfKind: (kind) => sFormulas.filter((f) => (kind === 'wissen' ? isKnowledge(f) : !isKnowledge(f))),
+  }
+  scopeCache.set(id, scope)
+  return scope
+}
+
+/** Aktives Fach aus dem Lernstand; unbekannte oder noch nicht verfügbare Fächer fallen auf das Standardfach zurück. */
+export function activeSubjectId(state: { settings: { subject?: string } }): SubjectId {
+  const s = state.settings.subject
+  return isSubjectId(s) && SUBJECTS[s].available ? s : DEFAULT_SUBJECT
+}
+
+/** Inhalte des aktiven Fachs. */
+export function scopeOf(state: { settings: { subject?: string } }): SubjectScope {
+  return scopeFor(activeSubjectId(state))
 }

@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router'
 import { ArrowRight, BookOpenText, Flame, Layers, Lightbulb, RefreshCcw, Settings, Shuffle, Sparkles, Swords, Target, TriangleAlert, Zap } from 'lucide-react'
-import { cardPath, cardsOfKind, chapterById } from '../content'
+import { cardPath, scopeOf } from '../content'
 import { PARTS } from '../content/types'
 import { dailyQuests } from '../lib/achievements'
 import { localDay } from '../lib/dates'
@@ -9,7 +9,7 @@ import { chapterProgress, countLabel, currentChapter, dueFormulas, formulaMaster
 import { computeStreak, goalProgress, GOAL_LABELS, levelFromXp } from '../lib/gamification'
 import { activeDays } from '../lib/progress'
 import { useStore } from '../state/store'
-import { Logo } from '../ui/Layout'
+import { Logo, SubjectSwitch } from '../ui/Layout'
 import { ButtonLink, Card, MasteryBadge, PartBadge, Progress, Ring, partTone } from '../ui/kit'
 
 function greeting(name: string) {
@@ -34,6 +34,7 @@ export default function Home() {
   const totalAnswered = state.log.length
   const accuracy = totalAnswered ? state.log.filter((r) => r.correct).length / totalAnswered : 0
   const tone = partTone[chapter.part]
+  const scope = scopeOf(state)
 
   return (
     <div className="space-y-6">
@@ -63,6 +64,8 @@ export default function Home() {
         </div>
       </header>
       <p className="font-display text-2xl md:hidden">{greeting(state.settings.name)}</p>
+      {/* Auf dem Handy gibt es keine Seitenleiste: Fachwechsel hier */}
+      <SubjectSwitch className="md:hidden" />
 
       {/* Hauptaktion */}
       <Card className="overflow-hidden">
@@ -77,7 +80,7 @@ export default function Home() {
             <>
               <h2 className="mt-3 text-3xl font-semibold">Willkommen beim Formelpfad</h2>
               <p className="mt-2 max-w-xl text-ink-2">
-                Kurze Lektionen zu Formeln und Wissen aus Finanzierung, Rechnungswesen sowie Jahresabschluss & Bewertung – mit Originalaufgaben aus Tutorien und Beispielklausur. Starte mit der ersten Lektion, sie dauert etwa fünf Minuten.
+                Kurze Lektionen zu Formeln und Wissen aus {scope.subject.title} ({scope.subject.description}), mit Originalaufgaben aus Übungen und Tutorien. Starte mit der ersten Lektion, sie dauert etwa fünf Minuten.
               </p>
             </>
           ) : (
@@ -265,7 +268,7 @@ export default function Home() {
             </div>
             <div>
               <p className="font-semibold">Klausur-Arena</p>
-              <p className="text-sm text-ink-3">Beispielklausur simulieren oder Themen gezielt trainieren</p>
+              <p className="text-sm text-ink-3">Klausur simulieren oder Themen gezielt trainieren</p>
             </div>
           </Card>
         </Link>
@@ -293,7 +296,8 @@ export default function Home() {
         </Link>
       </div>
       <p className="text-center text-xs text-ink-3">
-        Inhalte: {PARTS.fin.title} ({PARTS.fin.lecturer}), {PARTS.rw.title} ({PARTS.rw.lecturer}), {PARTS.jb.title} ({PARTS.jb.lecturer}) · SoSe 2026 · {cardsOfKind('formel').length} Formeln und {cardsOfKind('wissen').length} Begriffe in {chapterById.size} Kapiteln
+        {scope.subject.title}: {scope.parts.map((p) => `${PARTS[p].title} (${PARTS[p].lecturer})`).join(', ')}
+        {scope.subject.term ? ` · ${scope.subject.term}` : ''} · {scope.cardsOfKind('formel').length} Formeln und {scope.cardsOfKind('wissen').length} Begriffe in {scope.chapters.length} Kapiteln
       </p>
     </div>
   )

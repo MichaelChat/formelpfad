@@ -1,8 +1,9 @@
 import { NavLink, Outlet, useLocation } from 'react-router'
-import { BarChart3, BookOpenText, Home, Layers, Lightbulb, Map, RefreshCcw, Settings, Swords } from 'lucide-react'
+import { BarChart3, BookOpenText, ChevronRight, GraduationCap, Home, Layers, Lightbulb, Map, RefreshCcw, Settings, Swords } from 'lucide-react'
 import { useStore } from '../state/store'
 import { STATUS_LABELS, useCloud } from '../state/cloud'
 import { dueFormulas } from '../lib/engine'
+import { scopeOf } from '../content'
 import { useMemo } from 'react'
 
 const NAV = [
@@ -32,6 +33,24 @@ export function Logo({ className = '' }: { className?: string }) {
   )
 }
 
+/** Zeigt das aktive Fach und führt zur Fächerübersicht. */
+export function SubjectSwitch({ className = '' }: { className?: string }) {
+  const { state } = useStore()
+  const subject = scopeOf(state).subject
+  return (
+    <NavLink
+      to="/faecher"
+      aria-label={`Fach: ${subject.title}. Fach wechseln`}
+      className={({ isActive }) => `flex min-h-11 items-center gap-2 rounded-2xl border-2 px-3 text-sm font-semibold transition ${isActive ? 'border-ink bg-ink text-paper' : 'border-line bg-paper hover:border-ink-3'} ${className}`}
+    >
+      <GraduationCap className="size-5 shrink-0" aria-hidden />
+      <span className="min-w-0 flex-1 truncate">{subject.short}</span>
+      <span className="shrink-0 text-xs font-normal opacity-70">Fach wechseln</span>
+      <ChevronRight className="size-4 shrink-0 opacity-70" aria-hidden />
+    </NavLink>
+  )
+}
+
 export function Layout() {
   const { state, toasts, persistent } = useStore()
   const cloud = useCloud()
@@ -47,9 +66,10 @@ export function Layout() {
       </a>
       {/* Desktop-Navigation */}
       <aside className={`sticky top-0 hidden h-dvh flex-col gap-1 border-r border-line bg-paper-2/40 p-4 md:flex ${inSession ? 'md:hidden' : ''}`}>
-        <NavLink to="/" className="mb-6 px-2">
+        <NavLink to="/" className="mb-4 px-2">
           <Logo />
         </NavLink>
+        <SubjectSwitch className="mb-4" />
         <nav aria-label="Hauptnavigation" className="flex flex-col gap-1">
           {NAV.map((n) => (
             <NavLink key={n.to} to={n.to} end={n.end} className={({ isActive }) => `flex min-h-12 items-center gap-3 rounded-2xl px-3 font-semibold transition ${isActive ? 'bg-ink text-paper' : 'text-ink-2 hover:bg-paper-2'}`}>

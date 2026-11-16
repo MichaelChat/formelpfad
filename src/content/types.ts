@@ -288,12 +288,54 @@ export interface Chapter {
   lessons: Lesson[]
 }
 
+/**
+ * Fächer: oberste Ebene. Jedes Fach hat eigene Teile (z. B. WiWi 1: Finanzierung,
+ * Rechnungswesen, JB) und damit einen eigenen Lernpfad, eigene Wiederholungen,
+ * Karteikarten und Klausuren. Neues Fach: hier eintragen, seine Teile in PARTS
+ * anlegen und die Inhalte in src/content/data/ ergänzen (siehe README).
+ */
+export type SubjectId = 'wiwi1' | 'numerik' | 'la2' | 'telematik' | 'robotik1' | 'gki' | 'bs' | 'propa'
+
+export interface Subject {
+  id: SubjectId
+  title: string
+  /** Kurzname für die Kopfzeile. */
+  short: string
+  term: string
+  description: string
+  /** false = in Vorbereitung (in der Fächerübersicht sichtbar, aber nicht wählbar). */
+  available: boolean
+}
+
+/** Reihenfolge = Reihenfolge in der Fächerübersicht. */
+export const SUBJECTS: Record<SubjectId, Subject> = {
+  wiwi1: { id: 'wiwi1', title: 'Wirtschaftswissenschaften 1', short: 'WiWi 1', term: 'SoSe 2026', description: 'Finanzierung, Rechnungswesen sowie Jahresabschluss & Bewertung', available: true },
+  numerik: { id: 'numerik', title: 'Numerik', short: 'Numerik', term: '', description: 'Numerische Verfahren: lineare Gleichungssysteme, Interpolation, Quadratur, Nullstellen', available: false },
+  la2: { id: 'la2', title: 'Lineare Algebra 2', short: 'LA 2', term: '', description: 'Eigenwerte, Normalformen, Bilinearformen', available: false },
+  telematik: { id: 'telematik', title: 'Telematik', short: 'Telematik', term: '', description: 'Rechnernetze, Protokolle, Routing', available: false },
+  robotik1: { id: 'robotik1', title: 'Robotik I', short: 'Robotik I', term: '', description: 'Transformationen, Kinematik, Bewegungsplanung', available: false },
+  gki: { id: 'gki', title: 'Grundlagen der künstlichen Intelligenz', short: 'GKI', term: '', description: 'Suche, Logik, probabilistisches Schließen, Lernen', available: false },
+  bs: { id: 'bs', title: 'Betriebssysteme', short: 'BS', term: '', description: 'Prozesse, Scheduling, Speicherverwaltung, Synchronisation', available: false },
+  propa: { id: 'propa', title: 'Programmierparadigmen', short: 'ProPa', term: '', description: 'Funktionale, logische und parallele Programmierung', available: false },
+}
+
+export const DEFAULT_SUBJECT: SubjectId = 'wiwi1'
+
+export function isSubjectId(x: unknown): x is SubjectId {
+  return typeof x === 'string' && Object.hasOwn(SUBJECTS, x)
+}
+
 export type PartId = 'fin' | 'rw' | 'jb'
 
-export const PARTS: Record<PartId, { title: string; lecturer: string; color: string }> = {
-  fin: { title: 'Finanzierung', lecturer: 'Prof. Dr. Julian Thimme', color: 'fin' },
-  rw: { title: 'Rechnungswesen', lecturer: 'Prof. Dr. Marc Wouters', color: 'rw' },
-  jb: { title: 'Jahresabschluss & Bewertung', lecturer: 'Dr. Torsten Lüdecke', color: 'jb' },
+export const PARTS: Record<PartId, { title: string; lecturer: string; color: string; subject: SubjectId }> = {
+  fin: { title: 'Finanzierung', lecturer: 'Prof. Dr. Julian Thimme', color: 'fin', subject: 'wiwi1' },
+  rw: { title: 'Rechnungswesen', lecturer: 'Prof. Dr. Marc Wouters', color: 'rw', subject: 'wiwi1' },
+  jb: { title: 'Jahresabschluss & Bewertung', lecturer: 'Dr. Torsten Lüdecke', color: 'jb', subject: 'wiwi1' },
+}
+
+/** Teile eines Fachs in fester Reihenfolge. */
+export function partsOf(subject: SubjectId): PartId[] {
+  return (Object.keys(PARTS) as PartId[]).filter((p) => PARTS[p].subject === subject)
 }
 
 export interface ExamTask {

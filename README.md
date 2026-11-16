@@ -66,6 +66,18 @@ Jeder weitere `git push` aktualisiert die Seite automatisch.
 
 Die PDFs selbst gehören **nicht** ins Repository (`.gitignore` schließt `materials/*.pdf` aus). Die App enthält aber Formeln, kurze Aufgabentexte und Ergebnisse aus den Unterlagen des Lehrstuhls. Eine öffentlich erreichbare Seite ist eine Veröffentlichung. Für eine Nachhilfe-Gruppe ist es sicherer, vorher beim Lehrstuhl nachzufragen oder das Repository privat zu halten. GitHub Pages aus privaten Repositories braucht allerdings einen kostenpflichtigen Plan (z. B. GitHub Pro). Alternative: `dist/` lokal bauen und nur gezielt weitergeben.
 
+## Fächer
+
+Die App kennt mehrere Fächer. Jedes Fach hat einen eigenen Lernpfad, eigene Wiederholungen, Karteikarten, Formeln, Wissenskarten und Klausuren. XP, Level, Serie und Erfolge zählen fachübergreifend. Das aktive Fach wird unter **Fächer** gewählt (Seitenleiste bzw. auf dem Handy oben auf der Startseite) und mit dem Lernstand gespeichert.
+
+So kommt ein neues Fach dazu:
+
+1. In `src/content/types.ts` das Fach in `SUBJECTS` auf `available: true` setzen (oder neu eintragen) und seine Teile in `PartId`/`PARTS` mit `subject: '<fach>'` anlegen. Für neue Teile in `src/ui/kit.tsx` (`partTone`) und `src/index.css` Farben ergänzen.
+2. Inhalte in `src/content/data/` anlegen (Kapitel mit `part`, Formeln, Aufgaben) und in `src/content/index.ts` registrieren (`modules`, `CHAPTER_ORDER`). Quelldokumente in `src/content/sources.ts`.
+3. `npm test` prüft u. a., dass jedes verfügbare Fach Kapitel, Lektionen und Karten hat und sich keine Inhalte zwischen Fächern überschneiden.
+
+Fächer mit `available: false` erscheinen in der Übersicht als „In Vorbereitung“.
+
 ## Speicher und Daten
 
 **Mit Anmeldung:**

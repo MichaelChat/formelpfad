@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router'
 import { Award, BookOpen, Brain, Crown, Flame, Lock, Scroll, Sparkles, Target, Trophy, Wrench } from 'lucide-react'
-import { cardPath, chapters, formulas } from '../content'
+import { cardPath, scopeOf } from '../content'
 import { isKnowledge } from '../content/types'
 import { SKILL_LABELS, SKILLS, type Skill } from '../content/types'
 import { ACHIEVEMENTS, type Achievement } from '../lib/achievements'
@@ -20,6 +20,8 @@ export default function ProgressPage() {
   const lvl = levelFromXp(state.xp)
   const streak = computeStreak(activeDays(state), today)
   const weak = useMemo(() => weakFormulas(state, 6), [state])
+  // Kapitel, Kompetenzen und Beherrschung beziehen sich auf das aktive Fach; XP, Level, Serie und Erfolge gelten fachübergreifend.
+  const { chapters, formulas } = scopeOf(state)
 
   const skillAvg = useMemo(() => {
     const out = {} as Record<Skill, { sum: number; n: number }>
@@ -35,7 +37,7 @@ export default function ProgressPage() {
       }
     }
     return out
-  }, [state])
+  }, [state, formulas])
 
   const levels = useMemo(() => {
     const mk = () => ({ neu: 0, lernend: 0, gefestigt: 0, beherrscht: 0, total: 0 })
@@ -46,7 +48,7 @@ export default function ProgressPage() {
       k.total++
     }
     return c
-  }, [state])
+  }, [state, formulas])
 
   const days = Array.from({ length: 28 }, (_, i) => addDays(today, i - 27))
   const maxXp = Math.max(10, ...days.map((d) => state.daily[d]?.xp ?? 0))

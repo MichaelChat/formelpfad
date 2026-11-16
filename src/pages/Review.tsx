@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { CalendarClock, RefreshCcw, TriangleAlert, XCircle } from 'lucide-react'
-import { cardPath, exerciseById, formulaById } from '../content'
+import { cardPath, exerciseById, formulaById, scopeOf } from '../content'
 import { formatDayLong, localDay } from '../lib/dates'
 import { buildRetrySession, countLabel, dueFormulas, formulaMastery, upcomingReviews, weakFormulas } from '../lib/engine'
 import { useStore } from '../state/store'
@@ -16,8 +16,11 @@ export default function Review() {
   const due = useMemo(() => dueFormulas(state), [state])
   const weak = useMemo(() => weakFormulas(state, 8), [state])
   const upcoming = useMemo(() => upcomingReviews(state, 7), [state])
-  const recentWrong = state.recentWrong.map((id) => exerciseById.get(id)).filter((e) => !!e).slice(0, 8)
-  const [retry] = useState(() => (params.get('fehler') === '1' ? buildRetrySession(state.recentWrong.slice(0, 8)) : null))
+  // Nur Fehler aus dem aktiven Fach
+  const { chapterIds } = scopeOf(state)
+  const wrongIds = state.recentWrong.filter((id) => chapterIds.has(exerciseById.get(id)?.chapterId ?? ''))
+  const recentWrong = wrongIds.map((id) => exerciseById.get(id)).filter((e) => !!e).slice(0, 8)
+  const [retry] = useState(() => (params.get('fehler') === '1' ? buildRetrySession(wrongIds.slice(0, 8)) : null))
   if (retry) return <SessionPlayer session={retry} exitTo="/wiederholen" />
   const today = localDay()
   const started = state.log.length > 0
@@ -40,8 +43,8 @@ export default function Review() {
           <p className="flex items-center gap-2 text-lg font-semibold">
             <TriangleAlert className="size-5 text-bad" aria-hidden /> Meine Schwächen trainieren
           </p>
-          <p className="mb-4 text-ink-2">{weak.length || state.recentWrong.length ? 'Frühere Fehler sowie Formeln und Begriffe mit niedrigem Kompetenzwert, gemischt.' : 'Noch keine Schwächen erkannt.'}</p>
-          <ButtonLink to="/wiederholen/start?typ=schwaechen" variant="secondary" size="lg" className={weak.length || state.recentWrong.length ? '' : 'pointer-events-none opacity-40'}>
+          <p className="mb-4 text-ink-2">{weak.length || wrongIds.length ? 'Frühere Fehler sowie Formeln und Begriffe mit niedrigem Kompetenzwert, gemischt.' : 'Noch keine Schwächen erkannt.'}</p>
+          <ButtonLink to="/wiederholen/start?typ=schwaechen" variant="secondary" size="lg" className={weak.length || wrongIds.length ? '' : 'pointer-events-none opacity-40'}>
             Schwächen trainieren
           </ButtonLink>
         </Card>

@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import { useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { ArrowLeft, Ban, CheckCircle2, GraduationCap, Heart, History, Lightbulb, ListChecks, Play, Search, Shuffle, Sigma } from 'lucide-react'
-import { cardPath, cardsOfKind, chapterById, chapters, exams, exerciseById, formulaById, formulas } from '../content'
+import { cardPath, chapterById, chapters, exams, exerciseById, formulaById, formulas, scopeOf } from '../content'
 import { isKnowledge, KIND_LABELS, PARTS, SKILL_LABELS, type CardKind, type Formula, type PartId } from '../content/types'
 import { availableSkills, formulaMastery } from '../lib/engine'
 import { relevance } from '../lib/exam'
@@ -39,6 +39,8 @@ export function Knowledge() {
 
 /** Umschalter zwischen Formelsammlung und Wissensbereich. */
 function KindSwitch({ kind }: { kind: CardKind }) {
+  const { state } = useStore()
+  const { cardsOfKind } = scopeOf(state)
   const tabs: { k: CardKind; to: string; icon: typeof Sigma }[] = [
     { k: 'formel', to: '/formeln', icon: Sigma },
     { k: 'wissen', to: '/wissen', icon: Lightbulb },
@@ -62,7 +64,9 @@ function CardCollection({ kind }: { kind: CardKind }) {
   const [chapter, setChapter] = useState('alle')
   const [level, setLevel] = useState<MasteryLevel | 'alle'>('alle')
   const [view, setView] = useState<'alle' | 'favoriten' | 'zuletzt'>('alle')
-  const base = useMemo(() => cardsOfKind(kind), [kind])
+  // Nur Karten des aktiven Fachs
+  const { cardsOfKind } = scopeOf(state)
+  const base = useMemo(() => cardsOfKind(kind), [kind, cardsOfKind])
   const label = KIND_LABELS[kind]
   const knowledge = kind === 'wissen'
   const chapterOptions = useMemo(() => chapters.filter((c) => base.some((f) => f.chapterId === c.id)), [base])
