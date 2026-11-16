@@ -448,7 +448,7 @@ export const formulas: Formula[] = [
     mistakes: ['Die Ordnung p mit dem Exponenten $p + 1$ des lokalen Fehlers verwechseln.', 'Bei der summierten Trapezregel alle Funktionswerte neu berechnen.'],
     examTip: 'WS19/20: Fehlertabelle den Regeln zuordnen. Vorzeichen (konvex: Trapez +, Mittelpunkt −) und Faktor beim Verdoppeln von N (4 bzw. 16) verraten die Regel.',
     related: ['num.trapez-fehler', 'num.w.qf-ordnung', 'num.simpson'],
-    sources: [sk('84–88', 'Abschnitt 5.2.4, Satz 28, Lemma 3, Beispiele 32, Abschnitt 5.2.5, Beispiel 33'), src('NUM-K-SS26', '4–5', 'Aufgabe 4')],
+    sources: [sk('84–88', 'Abschnitt 5.2.4, Satz 28, Lemma 3, Beispiele 32, Abschnitt 5.2.5, Beispiel 33'), src('NUM-K-SS26', '5–6', 'Aufgabe 4')],
   }),
   {
     id: 'num.trapez-fehler',
@@ -472,7 +472,7 @@ export const formulas: Formula[] = [
     },
     related: ['num.w.qf-fehler', 'num.w.quadraturformel'],
     difficulty: 2,
-    sources: [src('NUM-K-SS26', '4–5', 'Aufgabe 4 b)'), sk('87', 'Beispiele 32 (b)')],
+    sources: [src('NUM-K-SS26', '5–6', 'Aufgabe 4 b)'), sk('87', 'Beispiele 32 (b)')],
     status: 'geprüft',
   },
 ]
@@ -485,7 +485,7 @@ export const exercises: Exercise[] = [
     options: opts(t`*$f'(x^k)\,d^k = -f(x^k)$, dann $x^{k+1} = x^k + d^k$`, [t`$f'(x^k)\,d^k = f(x^k)$, dann $x^{k+1} = x^k + d^k$`, 'Vorzeichen falsch: Man läuft von der Nullstelle weg.'], [t`$f(x^k)\,d^k = -f'(x^k)$`, 'Rollen von f und f′ vertauscht.'], [t`$x^{k+1} = f'(x^k)^{-1}f(x^k)$`, 'Hier fehlt $x^k$, und die Inverse rechnet man nicht explizit aus.']),
     hints: ['Linearisiere f in $x^k$ und setze die Linearisierung gleich 0.', '$f(x^k) + f\'(x^k)d = 0$.'],
     explanation: [t`$0 \approx f(x^k) + f'(x^k)d^k$ ⇒ $f'(x^k)d^k = -f(x^k)$.`],
-    sources: [sk('50', 'Abschnitt 3.2'), src('NUM-K-SS26', '3', 'Aufgabe 3 a)')],
+    sources: [sk('50', 'Abschnitt 3.2'), src('NUM-K-SS26', '4', 'Aufgabe 3 a)')],
   }),
   mc({
     id: 'num.w.newton.e2', chapterId: chN, formulaIds: ['num.w.newton'], skill: 'auswaehlen', difficulty: 2, origin: 'tutorium',
@@ -571,7 +571,7 @@ export const exercises: Exercise[] = [
       ['Ist $\\|f(x^k)\\|$ klein, ist auch der Fehler $\\|x^k - x^*\\|$ sicher klein.', false, 'Nicht bei großem $\\|f\'(x^*)^{-1}\\|$ (schlechte Kondition).'],
     ],
     hints: ['Zeichne die Tangenten für $1/x - 1$.', '$x^k - x^* \\approx f\'(x^*)^{-1}f(x^k)$.'],
-    sources: [sk('50–53'), src('NUM-K-SS26', '3', 'Aufgabe 3 c)')],
+    sources: [sk('50–53'), src('NUM-K-SS26', '4', 'Aufgabe 3 c)')],
   }),
 
   // ------------------------------------------------------------ Varianten
@@ -818,7 +818,7 @@ export const exercises: Exercise[] = [
     wrong: [{ value: 3, explanation: '$q = 3$: $\\tfrac12 \\cdot 0 + \\tfrac12 \\cdot 1 = \\tfrac12 \\neq \\tfrac13$.' }, { value: 1, explanation: '$q = 2$ ist erfüllt: $\\tfrac12 \\cdot 0 + \\tfrac12 \\cdot 1 = \\tfrac12$.' }],
     hints: ['$q = 1$: $\\sum b_k = 1$.', '$q = 2$: $\\sum b_k c_k = \\tfrac12$?', '$q = 3$: $\\sum b_k c_k^2 = \\tfrac13$?'],
     explanation: ['$q = 1, 2$ erfüllt, $q = 3$ nicht ⇒ Ordnung 2.'],
-    sources: [sk('78', 'Beispiel 30'), src('NUM-K-SS26', '4', 'Aufgabe 4 a)')],
+    sources: [sk('78', 'Beispiel 30'), src('NUM-K-SS26', '5', 'Aufgabe 4 a)')],
   }),
   numeric({
     id: 'num.w.qf-ordnung.e3', chapterId: chQ, formulaIds: ['num.w.qf-ordnung'], skill: 'anwenden', difficulty: 3, origin: 'klausur',
@@ -886,7 +886,7 @@ export const exercises: Exercise[] = [
     wrong: [{ value: 21, explanation: 'Die 11 alten Werte kann man wiederverwenden.' }, { value: 11, explanation: 'Neu sind nur die Mittelpunkte der 10 Intervalle.' }],
     hints: ['Welche Stützstellen kommen beim Halbieren dazu?', 'Die alten Gitterpunkte bleiben erhalten.'],
     explanation: ['Neu sind nur die 10 Intervallmittelpunkte: $T_{2N} = \\tfrac12 T_N + \\tfrac h2 \\sum f(\\text{Mittelpunkte})$.'],
-    sources: [src('NUM-K-SS26', '5', 'Aufgabe 4 c) (ii)')],
+    sources: [src('NUM-K-SS26', '6', 'Aufgabe 4 c) (ii)')],
   }),
   trueFalse({
     id: 'num.w.qf-fehler.e3', chapterId: chQ, formulaIds: ['num.w.qf-fehler'], skill: 'interpretieren', difficulty: 2, origin: 'app',
@@ -907,7 +907,7 @@ export const exercises: Exercise[] = [
     wrong: [{ value: 1, explanation: '$(b-a)^3 = 8$, nicht $(b-a)^2 = 4$.' }],
     hints: ['$\\tfrac{(b-a)^3}{12}\\max|f\'\'|$', '$\\tfrac{8}{12} \\cdot 3$'],
     explanation: ['$\\tfrac{8}{12} \\cdot 3 = 2$.'],
-    sources: [src('NUM-K-SS26', '4', 'Aufgabe 4 b)')],
+    sources: [src('NUM-K-SS26', '5', 'Aufgabe 4 b)')],
   }),
   numeric({
     id: 'num.trapez-fehler.e2', chapterId: chQ, formulaIds: ['num.trapez-fehler'], skill: 'anwenden', difficulty: 2, origin: 'app',
@@ -915,7 +915,7 @@ export const exercises: Exercise[] = [
     answer: 41, fmt: fmt.int(),
     hints: ['$\\tfrac{1}{12} \\cdot \\tfrac{1}{N^2} \\cdot 2 \\le 10^{-4}$', '$N^2 \\ge \\tfrac{2 \\cdot 10^4}{12} \\approx 1667$', '$\\sqrt{1667} \\approx 40{,}8$'],
     explanation: ['$N \\ge 40{,}8$, also $N = 41$.'],
-    sources: [src('NUM-K-SS26', '5', 'Aufgabe 4 c) (i)')],
+    sources: [src('NUM-K-SS26', '6', 'Aufgabe 4 c) (i)')],
   }),
 
   // ======================================================== Papier-Aufgaben
@@ -977,7 +977,7 @@ export const exercises: Exercise[] = [
       t`(c) Auch wenn $\|f(x^k)\| \le \varepsilon$ gilt, kann der Fehler $\|x^k - x^*\| \approx K\|f(x^k)\|$ groß sein, falls $K = \|f'(x^*)^{-1}\|$ groß ist (schlechte Kondition). Kleines Residuum garantiert keinen kleinen Fehler.`,
     ],
     keywords: ['S0, S1, S2', '‖dᵏ‖ < ε', 'K = ‖f′(x*)⁻¹‖', 'kleines Residuum ≠ kleiner Fehler'],
-    sources: [src('NUM-K-SS26', '3', 'Aufgabe 3 mit Lösungsskizze')],
+    sources: [src('NUM-K-SS26', '4', 'Aufgabe 3 mit Lösungsskizze')],
   }),
   paper({
     id: 'num.p.ws1920-2c', chapterId: chN, formulaIds: ['num.w.newton-varianten'], difficulty: 2, origin: 'klausur', estMinutes: 10, status: 'abgeleitet',
@@ -1149,7 +1149,7 @@ ein eingespannter kubischer Spline zu $x_n = n$ ($n = 0, 1, 2$) mit Hermite-Rand
       t`Ordnung 2: $\sum b_k = 1$, und die Formel ist symmetrisch, also ist die Ordnung gerade und mindestens 2 (alternativ $\tfrac12 \cdot 0 + \tfrac12 \cdot 1 = \tfrac12$ direkt). Wegen $\tfrac12 \cdot 0^2 + \tfrac12 \cdot 1^2 = \tfrac12 \neq \tfrac13$ ist sie genau 2.`,
     ],
     keywords: ['(b − a)(f(a) + f(b))/2', 'b = (½, ½), c = (0, 1)', 'Ordnung 2', '½ ≠ ⅓'],
-    sources: [src('NUM-K-SS26', '4', 'Aufgabe 4 a) mit Lösungsskizze')],
+    sources: [src('NUM-K-SS26', '5', 'Aufgabe 4 a) mit Lösungsskizze')],
   }),
   paper({
     id: 'num.p.ub6-2b', chapterId: chQ, formulaIds: ['num.w.qf-ordnung'], difficulty: 2, origin: 'tutorium', estMinutes: 12,
@@ -1227,7 +1227,7 @@ ein eingespannter kubischer Spline zu $x_n = n$ ($n = 0, 1, 2$) mit Hermite-Rand
       '(iii) Die Gitterweite halbiert sich, wegen $h^2$ viertelt sich die Fehlerschranke.',
     ],
     keywords: ['Restglied ½ x(x − 1) f″(ξ)', '∫ x(1 − x) = 1/6', '(b − a)/12 · h² · max|f″|', 'N neue Mittelpunkte', 'Fehler / 4'],
-    sources: [src('NUM-K-SS26', '4–5', 'Aufgabe 4 b), c) mit Lösungsskizze')],
+    sources: [src('NUM-K-SS26', '5–6', 'Aufgabe 4 b), c) mit Lösungsskizze')],
   }),
   paper({
     id: 'num.p.ws1920-4d', chapterId: chQ, formulaIds: ['num.w.qf-fehler'], difficulty: 2, origin: 'klausur', estMinutes: 8, status: 'abgeleitet',

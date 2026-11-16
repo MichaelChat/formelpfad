@@ -561,7 +561,7 @@ export const exercises: Exercise[] = [
     options: opts('*$\\sigma = -\\|v\\|_2$ für $v_1 > 0$, $\\sigma = \\|v\\|_2$ für $v_1 \\le 0$', ['$\\sigma = \\|v\\|_2$ für $v_1 > 0$, $\\sigma = -\\|v\\|_2$ für $v_1 \\le 0$', 'Dann wird in $v_1 - \\sigma$ eine fast gleich große Zahl abgezogen: Auslöschung.'], ['$\\sigma = v_1$', 'Es muss $|\\sigma| = \\|v\\|_2$ gelten, weil Q die Länge erhält.'], ['$\\sigma = 1$', 'Dann stimmt die Länge im Allgemeinen nicht.']),
     hints: ['Q ist orthogonal, also $|\\sigma| = \\|v\\|_2$.', 'In $v_1 - \\sigma$ sollen Zahlen gleichen Vorzeichens addiert werden.'],
     explanation: ['Mit $\\sigma = -\\mathrm{sign}(v_1)\\|v\\|_2$ wird $v_1 - \\sigma = v_1 + \\mathrm{sign}(v_1)\\|v\\|_2$: gleiche Vorzeichen, keine Auslöschung.'],
-    sources: [sk('31', 'Berechnung von w und σ'), src('NUM-K-SS26', '6', 'Aufgabe 5 a)')],
+    sources: [sk('31', 'Berechnung von w und σ'), src('NUM-K-SS26', '7', 'Aufgabe 5 a)')],
   }),
   numeric({
     id: 'num.w.householder.e2', chapterId: chQR, formulaIds: ['num.w.householder'], skill: 'anwenden', difficulty: 2, origin: 'app',
@@ -962,7 +962,7 @@ die auslöschungsfreie Householder-Transformation Q mit $QAe^1 = \sigma e^1$.`,
       t`(b) $t^1$ hat nur die ersten beiden Einträge ungleich 0, also auch $w^1 = (*, *, 0, \dots, 0)^\top$. Damit ist $w^1(w^1)^\top$ nur im linken oberen $2 \times 2$-Block besetzt und $$Q_1 = \begin{pmatrix} * & * & 0^\top \\ * & * & 0^\top \\ 0 & 0 & I_{N-2} \end{pmatrix}.$$`,
     ],
     keywords: ['σ = −sign(t₁₁)‖t¹‖₂', 'gleiche Vorzeichen', 'signifikante Stellen', '2×2-Block + I_{N−2}'],
-    sources: [src('NUM-K-SS26', '6', 'Aufgabe 5 a), b) mit Lösungsskizze'), src('NUM-UB04', '2–3', 'Aufgabe 2 a)')],
+    sources: [src('NUM-K-SS26', '7', 'Aufgabe 5 a), b) mit Lösungsskizze'), src('NUM-UB04', '2–3', 'Aufgabe 2 a)')],
   }),
   paper({
     id: 'num.p.ub3-3', chapterId: chQR, formulaIds: ['num.w.householder', 'num.w.aufwaende'], difficulty: 2, origin: 'tutorium', estMinutes: 12,

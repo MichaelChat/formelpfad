@@ -11,6 +11,7 @@ import * as exam from './data/exam'
 import * as num1 from './data/num-1'
 import * as num2 from './data/num-2'
 import * as num3 from './data/num-3'
+import * as num4 from './data/num-4'
 import { DEFAULT_SUBJECT, isKnowledge, isSubjectId, PARTS, partsOf, SUBJECTS, type CardKind, type Chapter, type Exam, type Exercise, type Formula, type Lesson, type PartId, type Subject, type SubjectId } from './types'
 
 interface ContentModule {
@@ -22,10 +23,10 @@ interface ContentModule {
   extraLessons?: { chapterId: string; lessons: Lesson[] }[]
 }
 
-const modules: ContentModule[] = [fin1, fin2, rw1, rw2, jb, wissenFin, wissenRw, wissenJb, wissenAbruf, num1, num2, num3]
+const modules: ContentModule[] = [fin1, fin2, rw1, rw2, jb, wissenFin, wissenRw, wissenJb, wissenAbruf, num1, num2, num3, num4]
 
 /** Kapitel in fester Reihenfolge je Teil; Zusatzlektionen werden an ihr Kapitel angehängt. */
-const CHAPTER_ORDER = ['fin-grundlagen', 'fin-zeitwert', 'fin-renten', 'fin-anleihen', 'fin-invest', 'fin-aktien', 'fin-portfolio', 'rw-grundlagen', 'rw-bilanz', 'rw-bewertung', 'rw-kosten', 'rw-kostenstellen', 'rw-kostentraeger', 'jb-grundlagen', 'jb-ansatz', 'jb-bewertung', 'jb-guv', 'jb-anhang', 'num-gleitpunkt', 'num-lr', 'num-qr', 'num-kondition', 'num-ausgleich', 'num-newton', 'num-interpolation', 'num-spline', 'num-quadratur']
+const CHAPTER_ORDER = ['fin-grundlagen', 'fin-zeitwert', 'fin-renten', 'fin-anleihen', 'fin-invest', 'fin-aktien', 'fin-portfolio', 'rw-grundlagen', 'rw-bilanz', 'rw-bewertung', 'rw-kosten', 'rw-kostenstellen', 'rw-kostentraeger', 'jb-grundlagen', 'jb-ansatz', 'jb-bewertung', 'jb-guv', 'jb-anhang', 'num-gleitpunkt', 'num-lr', 'num-qr', 'num-kondition', 'num-ausgleich', 'num-newton', 'num-interpolation', 'num-spline', 'num-quadratur', 'num-eigenwerte', 'num-iterativ']
 
 export const chapters: Chapter[] = modules
   .flatMap((m) => m.chapters)
@@ -50,7 +51,7 @@ export function cardsOfKind(kind: CardKind): Formula[] {
 export function cardPath(f: Pick<Formula, 'id' | 'kind'>): string {
   return `${isKnowledge(f) ? '/wissen' : '/formeln'}/${encodeURIComponent(f.id)}`
 }
-export const exams: Exam[] = exam.exams
+export const exams: Exam[] = [...exam.exams, ...num4.exams]
 export const estimatedPointTasks = exam.estimatedPointTasks
 export const officialChecks = modules.flatMap((m) => m.officialChecks)
 

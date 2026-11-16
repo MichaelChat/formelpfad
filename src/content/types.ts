@@ -316,7 +316,7 @@ export interface Subject {
 /** Reihenfolge = Reihenfolge in der Fächerübersicht. */
 export const SUBJECTS: Record<SubjectId, Subject> = {
   wiwi1: { id: 'wiwi1', title: 'Wirtschaftswissenschaften 1', short: 'WiWi 1', term: 'SoSe 2026', description: 'Finanzierung, Rechnungswesen sowie Jahresabschluss & Bewertung', available: true },
-  numerik: { id: 'numerik', title: 'Numerische Mathematik', short: 'Numerik', term: 'SoSe 2026', description: 'Für Informatik und Ingenieurwesen: Gleitpunktrechnung, lineare Gleichungssysteme, Ausgleichsrechnung (weitere Kapitel folgen)', available: true },
+  numerik: { id: 'numerik', title: 'Numerische Mathematik', short: 'Numerik', term: 'SoSe 2026', description: 'Für Informatik und Ingenieurwesen: Gleitpunktrechnung, lineare Gleichungssysteme, Newton-Verfahren, Interpolation, Quadratur, Eigenwerte und iterative Verfahren', available: true },
   la2: { id: 'la2', title: 'Lineare Algebra 2', short: 'LA 2', term: '', description: 'Eigenwerte, Normalformen, Bilinearformen', available: false },
   telematik: { id: 'telematik', title: 'Telematik', short: 'Telematik', term: '', description: 'Rechnernetze, Protokolle, Routing', available: false },
   robotik1: { id: 'robotik1', title: 'Robotik I', short: 'Robotik I', term: '', description: 'Transformationen, Kinematik, Bewegungsplanung', available: false },
