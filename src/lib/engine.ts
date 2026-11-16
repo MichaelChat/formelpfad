@@ -81,7 +81,9 @@ export function buildLessonSession(state: AppState, lessonId: string): Session |
   const rng = mulberry32(seedFor(state, lessonId))
   const perFormula = Math.max(2, Math.min(5, Math.ceil(9 / lesson.formulaIds.length)))
   const items: SessionItem[] = [{ kind: 'intro', title: lesson.title, text: lesson.goal, formulaIds: lesson.formulaIds }]
-  const used = new Set<string>()
+  // Papier-Aufgaben kommen gesammelt ans Ende und werden nicht zusätzlich zufällig gezogen
+  const paper = (lesson.paperTaskIds ?? []).map((id) => exerciseById.get(id)).filter((e): e is Exercise => !!e)
+  const used = new Set<string>(paper.map((e) => e.id))
 
   for (const fid of lesson.formulaIds) {
     const f = formulaById.get(fid)
@@ -101,6 +103,7 @@ export function buildLessonSession(state: AppState, lessonId: string): Session |
       items.push({ kind: 'exercise', exercise: ex })
     }
   }
+  for (const ex of paper) items.push({ kind: 'exercise', exercise: ex })
   items.push({ kind: 'mistakes', formulaIds: lesson.formulaIds })
   return { id: `lesson:${lessonId}:${Date.now()}`, mode: 'lesson', title: lesson.title, subtitle: `${chapter.number} · ${chapter.title}`, items, lessonId, chapterId: chapter.id }
 }

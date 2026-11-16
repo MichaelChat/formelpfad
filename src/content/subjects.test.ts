@@ -46,3 +46,27 @@ describe('Fächer', () => {
     for (const id of available) expect(activeSubjectId({ settings: { subject: id } })).toBe(id)
   })
 })
+
+describe('Papier-Aufgaben', () => {
+  it('Lektionen verweisen nur auf existierende Papier-Aufgaben aus dem eigenen Kapitel', () => {
+    for (const l of lessons) {
+      for (const id of l.paperTaskIds ?? []) {
+        const ex = exercises.find((e) => e.id === id)
+        expect(ex, `${l.id} → ${id}`).toBeTruthy()
+        expect(ex!.type === 'selfcheck' && ex!.paper, `${id} ist keine Papier-Aufgabe`).toBe(true)
+        expect(ex!.chapterId, `${id} gehört nicht zum Kapitel von ${l.id}`).toBe(l.chapterId)
+      }
+    }
+  })
+
+  it('jede Papier-Aufgabe hat Musterlösung, Quelle und steht in genau einer Lektion', () => {
+    const used = lessons.flatMap((l) => l.paperTaskIds ?? [])
+    for (const ex of exercises.filter((e) => e.type === 'selfcheck' && e.paper)) {
+      if (ex.type !== 'selfcheck') continue
+      expect(ex.modelAnswer.length, ex.id).toBeGreaterThan(0)
+      expect(ex.sources?.length ?? 0, ex.id).toBeGreaterThan(0)
+      expect(used.filter((id) => id === ex.id), ex.id).toHaveLength(1)
+      if (ex.status === 'abgeleitet' && ex.origin !== 'app') expect(ex.statusNote, `${ex.id} braucht einen Hinweis, warum die Lösung nicht offiziell ist`).toBeTruthy()
+    }
+  })
+})

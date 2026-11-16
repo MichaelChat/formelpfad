@@ -34,9 +34,9 @@ export function Card({ children, className = '', as: As = 'div' }: { children: R
   return <As className={`rounded-[var(--radius-card)] border border-line bg-paper shadow-[var(--shadow-card)] ${className}`}>{children}</As>
 }
 
-export function Progress({ value, className = '', tone = 'ink', label }: { value: number; className?: string; tone?: 'ink' | 'good' | 'xp' | 'fin' | 'rw' | 'jb'; label?: string }) {
+export function Progress({ value, className = '', tone = 'ink', label }: { value: number; className?: string; tone?: 'ink' | 'good' | 'xp' | 'fin' | 'rw' | 'jb' | 'num'; label?: string }) {
   const pct = Math.max(0, Math.min(1, value)) * 100
-  const color = { ink: 'bg-ink', good: 'bg-good', xp: 'bg-xp', fin: 'bg-fin', rw: 'bg-rw', jb: 'bg-jb' }[tone]
+  const color = { ink: 'bg-ink', good: 'bg-good', xp: 'bg-xp', fin: 'bg-fin', rw: 'bg-rw', jb: 'bg-jb', num: 'bg-num' }[tone]
   return (
     <div className={`h-3 w-full overflow-hidden rounded-full bg-paper-2 ${className}`} role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(pct)} aria-label={label}>
       <div className={`h-full rounded-full ${color} transition-[width] duration-500`} style={{ width: `${pct}%` }} />
@@ -67,6 +67,7 @@ export const partTone: Record<PartId, { text: string; bg: string; soft: string; 
   fin: { text: 'text-fin', bg: 'bg-fin', soft: 'bg-fin-soft', border: 'border-fin', varColor: 'var(--color-fin)' },
   rw: { text: 'text-rw', bg: 'bg-rw', soft: 'bg-rw-soft', border: 'border-rw', varColor: 'var(--color-rw)' },
   jb: { text: 'text-jb', bg: 'bg-jb', soft: 'bg-jb-soft', border: 'border-jb', varColor: 'var(--color-jb)' },
+  num: { text: 'text-num', bg: 'bg-num', soft: 'bg-num-soft', border: 'border-num', varColor: 'var(--color-num)' },
 }
 
 export function PartBadge({ part }: { part: PartId }) {

@@ -25,7 +25,12 @@ export function ExerciseHeader({ exercise }: { exercise: Exercise }) {
       <OriginBadge origin={exercise.origin} />
       <Pill className="bg-paper-2 text-ink-3">{SKILL_LABELS[exercise.skill]}</Pill>
       {exercise.type === 'mc' && exercise.variant === 'fehler' && <Pill className="bg-bad-soft text-bad">Fehler finden</Pill>}
-      {exercise.type === 'selfcheck' && <Pill className="bg-xp/15 text-ink-2">Selbstkontrolle</Pill>}
+      {exercise.type === 'selfcheck' && <Pill className="bg-xp/15 text-ink-2">{exercise.paper ? 'Papier-Aufgabe' : 'Selbstkontrolle'}</Pill>}
+      {exercise.status === 'abgeleitet' && exercise.origin !== 'app' && (
+        <span title={exercise.statusNote}>
+          <Pill className="bg-paper-2 text-ink-3">Lösung nicht offiziell</Pill>
+        </span>
+      )}
     </div>
   )
 }
@@ -114,7 +119,7 @@ export function ExercisePlayer({ exercise, onAnswered, onNext, nextLabel = 'Weit
   }
 
   const canHint = !result && hints < exercise.hints.length
-  const checkLabel = exercise.type === 'steps' ? (currentStep !== undefined && currentStep < exercise.steps.length - 1 ? 'Schritt prüfen' : 'Prüfen') : exercise.type === 'selfcheck' ? 'Musterlösung zeigen' : 'Prüfen'
+  const checkLabel = exercise.type === 'steps' ? (currentStep !== undefined && currentStep < exercise.steps.length - 1 ? 'Schritt prüfen' : 'Prüfen') : exercise.type === 'selfcheck' ? (exercise.paper ? 'Fertig – Musterlösung aufdecken' : 'Musterlösung zeigen') : 'Prüfen'
 
   return (
     <div className="space-y-5">
@@ -162,6 +167,7 @@ export function ExercisePlayer({ exercise, onAnswered, onNext, nextLabel = 'Weit
               ))}
             </div>
           )}
+          {exercise.statusNote && <p className="text-xs text-ink-3">Hinweis: {exercise.statusNote}</p>}
           <p className="text-sm text-ink-3">Wie gut deckt sich deine Antwort mit der Musterlösung?</p>
           <div className="grid grid-cols-3 gap-2">
             <Button variant="secondary" onClick={() => selfAssess(0)}>Nicht</Button>

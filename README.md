@@ -78,6 +78,8 @@ So kommt ein neues Fach dazu:
 
 Fächer mit `available: false` erscheinen in der Übersicht als „In Vorbereitung“.
 
+**Papier-Aufgaben** (z. B. Numerik): Aufgaben, die man auf Papier rechnet und dann mit der Musterlösung vergleicht, werden mit `paper({...})` aus `src/content/helpers.ts` angelegt und über `paperTaskIds` an eine Lektion gehängt; sie kommen am Ende der Lektion. Ist die Lösung nicht offiziell (nur als Scan vorhanden oder fehlt), bekommt die Aufgabe `status: 'abgeleitet'` und einen `statusNote`. In Texten sind `**fett**`, Zeilenumbrüche und abgesetzte Formeln mit `$$…$$` (z. B. Matrizen) möglich.
+
 ## Speicher und Daten
 
 **Mit Anmeldung:**

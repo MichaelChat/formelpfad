@@ -27,6 +27,8 @@
   --color-rw-soft: #e9e2f8;
   --color-jb: #b9741a;
   --color-jb-soft: #f7e8d0;
+  --color-num: #2f5fb3;
+  --color-num-soft: #dfe8f8;
 
   --color-good: #1f9d63;
   --color-good-soft: #dcf3e7;
@@ -60,6 +62,8 @@
     --color-rw-soft: #2b2448;
     --color-jb: #f0b25c;
     --color-jb-soft: #3d2d15;
+    --color-num: #7fa6ef;
+    --color-num-soft: #1a2a45;
     --color-good: #3fcf8e;
     --color-good-soft: #133528;
     --color-bad: #f07a66;

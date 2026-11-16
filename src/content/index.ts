@@ -8,6 +8,8 @@ import * as wissenRw from './data/wissen-rw'
 import * as wissenJb from './data/wissen-jb'
 import * as wissenAbruf from './data/wissen-abruf'
 import * as exam from './data/exam'
+import * as num1 from './data/num-1'
+import * as num2 from './data/num-2'
 import { DEFAULT_SUBJECT, isKnowledge, isSubjectId, PARTS, partsOf, SUBJECTS, type CardKind, type Chapter, type Exam, type Exercise, type Formula, type Lesson, type PartId, type Subject, type SubjectId } from './types'
 
 interface ContentModule {
@@ -19,10 +21,10 @@ interface ContentModule {
   extraLessons?: { chapterId: string; lessons: Lesson[] }[]
 }
 
-const modules: ContentModule[] = [fin1, fin2, rw1, rw2, jb, wissenFin, wissenRw, wissenJb, wissenAbruf]
+const modules: ContentModule[] = [fin1, fin2, rw1, rw2, jb, wissenFin, wissenRw, wissenJb, wissenAbruf, num1, num2]
 
 /** Kapitel in fester Reihenfolge je Teil; Zusatzlektionen werden an ihr Kapitel angehängt. */
-const CHAPTER_ORDER = ['fin-grundlagen', 'fin-zeitwert', 'fin-renten', 'fin-anleihen', 'fin-invest', 'fin-aktien', 'fin-portfolio', 'rw-grundlagen', 'rw-bilanz', 'rw-bewertung', 'rw-kosten', 'rw-kostenstellen', 'rw-kostentraeger', 'jb-grundlagen', 'jb-ansatz', 'jb-bewertung', 'jb-guv', 'jb-anhang']
+const CHAPTER_ORDER = ['fin-grundlagen', 'fin-zeitwert', 'fin-renten', 'fin-anleihen', 'fin-invest', 'fin-aktien', 'fin-portfolio', 'rw-grundlagen', 'rw-bilanz', 'rw-bewertung', 'rw-kosten', 'rw-kostenstellen', 'rw-kostentraeger', 'jb-grundlagen', 'jb-ansatz', 'jb-bewertung', 'jb-guv', 'jb-anhang', 'num-gleitpunkt', 'num-lr', 'num-qr', 'num-kondition', 'num-ausgleich']
 
 export const chapters: Chapter[] = modules
   .flatMap((m) => m.chapters)

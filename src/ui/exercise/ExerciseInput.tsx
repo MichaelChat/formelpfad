@@ -1,5 +1,5 @@
 import { useMemo, useRef } from 'react'
-import { Check, X } from 'lucide-react'
+import { Check, PencilLine, X } from 'lucide-react'
 import type { Exercise, McOption, Step } from '../../content/types'
 import type { Response, StepResponse } from '../../lib/evaluate'
 import type { CheckResult } from '../../lib/validation'
@@ -57,6 +57,15 @@ export function ExerciseInput(p: Props) {
       )
     }
     case 'selfcheck':
+      if (ex.paper)
+        return (
+          <div className="flex gap-3 rounded-2xl border-2 border-dashed border-line bg-paper-2/50 p-4 text-sm text-ink-2">
+            <PencilLine className="mt-0.5 size-5 shrink-0 text-ink" aria-hidden />
+            <p>
+              <span className="font-semibold text-ink">Auf Papier lösen.</span> Nimm dir Stift und Papier und rechne bzw. schreibe die Aufgabe vollständig auf, wie in der Klausur. Danach deckst du die Musterlösung auf und vergleichst selbst.
+            </p>
+          </div>
+        )
       return (
         <label className="block">
           <span className="mb-2 block text-sm font-medium text-ink-2">Deine Antwort (Notizen – wird nicht automatisch bewertet)</span>

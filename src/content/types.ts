@@ -183,6 +183,8 @@ export interface ExerciseBase {
   estMinutes?: number
   /** Kurzer Aufgabenkontext, der vor der Frage angezeigt wird. */
   context?: string
+  /** Erläuterung zum Status, z. B. warum die Lösung nicht offiziell ist. */
+  statusNote?: string
 }
 
 export interface McOption {
@@ -263,6 +265,8 @@ export interface SelfCheckExercise extends ExerciseBase {
   modelAnswer: string[]
   /** Stichworte, die in einer guten Antwort vorkommen sollten. */
   keywords?: string[]
+  /** Papier-Aufgabe: auf Papier rechnen, dann Musterlösung aufdecken (kein Notizfeld). */
+  paper?: boolean
 }
 
 export type Exercise = McExercise | MatchExercise | FormulaInputExercise | NumericExercise | StepsExercise | SelfCheckExercise
@@ -276,6 +280,8 @@ export interface Lesson {
   formulaIds: string[]
   /** Zusätzliche Aufgaben, die nicht über formulaIds gefunden werden. */
   extraExerciseIds?: string[]
+  /** Papier-Aufgaben (Selbstkontrolle), die am Ende der Lektion in dieser Reihenfolge gestellt werden. */
+  paperTaskIds?: string[]
 }
 
 export interface Chapter {
@@ -310,7 +316,7 @@ export interface Subject {
 /** Reihenfolge = Reihenfolge in der Fächerübersicht. */
 export const SUBJECTS: Record<SubjectId, Subject> = {
   wiwi1: { id: 'wiwi1', title: 'Wirtschaftswissenschaften 1', short: 'WiWi 1', term: 'SoSe 2026', description: 'Finanzierung, Rechnungswesen sowie Jahresabschluss & Bewertung', available: true },
-  numerik: { id: 'numerik', title: 'Numerik', short: 'Numerik', term: '', description: 'Numerische Verfahren: lineare Gleichungssysteme, Interpolation, Quadratur, Nullstellen', available: false },
+  numerik: { id: 'numerik', title: 'Numerische Mathematik', short: 'Numerik', term: 'SoSe 2026', description: 'Für Informatik und Ingenieurwesen: Gleitpunktrechnung, lineare Gleichungssysteme, Ausgleichsrechnung (weitere Kapitel folgen)', available: true },
   la2: { id: 'la2', title: 'Lineare Algebra 2', short: 'LA 2', term: '', description: 'Eigenwerte, Normalformen, Bilinearformen', available: false },
   telematik: { id: 'telematik', title: 'Telematik', short: 'Telematik', term: '', description: 'Rechnernetze, Protokolle, Routing', available: false },
   robotik1: { id: 'robotik1', title: 'Robotik I', short: 'Robotik I', term: '', description: 'Transformationen, Kinematik, Bewegungsplanung', available: false },
@@ -325,12 +331,13 @@ export function isSubjectId(x: unknown): x is SubjectId {
   return typeof x === 'string' && Object.hasOwn(SUBJECTS, x)
 }
 
-export type PartId = 'fin' | 'rw' | 'jb'
+export type PartId = 'fin' | 'rw' | 'jb' | 'num'
 
 export const PARTS: Record<PartId, { title: string; lecturer: string; color: string; subject: SubjectId }> = {
   fin: { title: 'Finanzierung', lecturer: 'Prof. Dr. Julian Thimme', color: 'fin', subject: 'wiwi1' },
   rw: { title: 'Rechnungswesen', lecturer: 'Prof. Dr. Marc Wouters', color: 'rw', subject: 'wiwi1' },
   jb: { title: 'Jahresabschluss & Bewertung', lecturer: 'Dr. Torsten Lüdecke', color: 'jb', subject: 'wiwi1' },
+  num: { title: 'Numerische Mathematik', lecturer: 'Dr. Daniel Weiß', color: 'num', subject: 'numerik' },
 }
 
 /** Teile eines Fachs in fester Reihenfolge. */

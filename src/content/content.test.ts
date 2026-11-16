@@ -209,9 +209,10 @@ describe('Wissenskarten', () => {
   const knowledge = formulas.filter((f) => f.kind === 'wissen')
   const ACTIVE = ['abrufen', 'einsetzen', 'umstellen', 'anwenden']
 
-  it('es gibt einen nennenswerten Wissensbereich in allen drei Teilen', () => {
-    expect(knowledge.length).toBeGreaterThanOrEqual(35)
-    const parts = new Set(knowledge.map((f) => chapters.find((c) => c.id === f.chapterId)!.part))
+  it('es gibt einen nennenswerten Wissensbereich in allen drei WiWi-Teilen', () => {
+    const wiwi = knowledge.filter((f) => ['fin', 'rw', 'jb'].includes(chapters.find((c) => c.id === f.chapterId)!.part))
+    expect(wiwi.length).toBeGreaterThanOrEqual(35)
+    const parts = new Set(wiwi.map((f) => chapters.find((c) => c.id === f.chapterId)!.part))
     expect([...parts].sort()).toEqual(['fin', 'jb', 'rw'])
   })
 

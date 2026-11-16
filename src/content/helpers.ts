@@ -89,6 +89,14 @@ export function selfcheck(b: Base & { prompt: string; modelAnswer: string[]; key
   return { ...base({ ...rest, explanation }), type: 'selfcheck', prompt, modelAnswer, ...(keywords ? { keywords } : {}) }
 }
 
+/**
+ * Papier-Aufgabe: Aufgabe vollständig auf Papier lösen, dann die Musterlösung aufdecken und selbst
+ * bewerten. Standard: Fähigkeit „anwenden“; Hinweise sind gestufte Denkanstöße.
+ */
+export function paper(b: Omit<Base, 'skill'> & Partial<Pick<Base, 'skill'>> & { prompt: string; modelAnswer: string[]; keywords?: string[] }): SelfCheckExercise {
+  return { ...selfcheck({ skill: 'anwenden', ...b }), paper: true }
+}
+
 export function numStep(label: string, answer: number, f: NumFmt, extra: Partial<Omit<Extract<Step, { kind: 'numeric' }>, 'kind' | 'label' | 'answer' | 'fmt'>> = {}): Step {
   return { kind: 'numeric', label, answer, fmt: f, ...extra }
 }
